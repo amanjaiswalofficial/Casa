@@ -15,7 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from registerapp.views import NewUserView, successpage
+
+
 
 urlpatterns = [
+    path('success/',successpage, name = 'success'),
     path('admin/', admin.site.urls),
+    path('',NewUserView.as_view())
 ]
