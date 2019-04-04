@@ -1,0 +1,12 @@
+{% load widget_tweaks %}
+{% load crispy_forms_tags %}
+<html>
+<form method="POST">
+    {% csrf_token %}
+    First Name: <input type="text" value="{{user.first_name}}" name="first_name"><br>
+    Last Name: <input type="text" value="{{user.last_name}}" name="last_name"><br>
+    Description: <input type="text" value="{{user.description}}" name="description"><br>
+    Profile Image: <input type="file" value="{{user.profile_image}}" name="profile_image"><br>
+    <input type="submit" value="Click To Update" name="update_profile">
+</form>
+</html>

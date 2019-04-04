@@ -6,4 +6,7 @@ class NewUserForm(UserCreationForm):
 
     class Meta:
         model = NewUser
-        fields = ['username', 'email_field', 'first_name','password1', 'last_name', 'description', 'profile_image', 'is_seller']
+        fields = ['username', 'email_field',
+                  'first_name', 'password1',
+                  'last_name', 'description',
+                  'profile_image', 'is_seller']

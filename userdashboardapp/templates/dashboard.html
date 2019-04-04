@@ -1,0 +1,12 @@
+<html>
+<img src="{{user.profile_image.url}}" height="500" width="500" style="border-radius:50%"><br>
+{{user.username}}<br>
+{{user.profile_image}}
+{{user.first_name}} {{user.last_name}}<br>
+{{user.email_field}}<br>
+{{user.description}}
+<form method="POST">
+    {% csrf_token %}
+    <input type="Submit" name="update_profile_button" value="Click To Update Profile">
+</form>
+</html>

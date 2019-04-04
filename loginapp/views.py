@@ -27,8 +27,6 @@ class LoginFormView(FormView):
             self.request.session['logged_in'] = True
             self.request.session['current_user'] = username
             self.request.session['is_seller'] = NewUser.objects.get(username=username).is_seller
-            import pdb;
-            pdb.set_trace()
             return HttpResponse('All set')
         else:
             #FIX

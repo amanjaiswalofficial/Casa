@@ -15,7 +15,7 @@ class NewUser(User):
                                     unique=True,
                                     blank=False)
     description = models.TextField()
-    profile_image = models.ImageField(upload_to='media/user_images/', default='static/register_app/blank_face.png')
+    profile_image = models.ImageField(upload_to='user_images/', default='register_app/blank_face.png')
     is_seller = models.BooleanField(default=False)
 
     def get_absolute_url(self):
