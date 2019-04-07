@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
 from registerapp.models import NewUser
+from django.contrib import messages
 
 
 class UserDashboardApp(View):
@@ -20,6 +21,7 @@ class UserDashboardApp(View):
             else:
                 return render(self.request, 'dashboard_buyer.html', context=user)
         except NewUser.DoesNotExist:
+            messages.add_message(self.request, messages.INFO, "Login in first to view dashboard")
             return redirect('loginapp:check_login')
 
     def post(self, request):

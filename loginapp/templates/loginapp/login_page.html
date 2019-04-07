@@ -1,7 +1,7 @@
 <html>
-{% for items in error.values %}
-    {{items}}
-    {% endfor %}
+{% for message in messages %}
+    {{message}}
+{% endfor %}
 <form method="POST">
     {% csrf_token %}
     {{form.as_p}}

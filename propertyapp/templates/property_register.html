@@ -1,0 +1,21 @@
+<html>
+{% load widget_tweaks %}
+<body>
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    Title:{% render_field property_form.property_title %}<br>
+    Address:{% render_field property_form.property_address %}<br>
+    PIN Code:{% render_field property_form.property_pin %}<br>
+    Price:{% render_field property_form.property_price %}<br>
+    Bedroom:{% render_field property_form.property_bedroom %}<br>
+    Bathroom:{% render_field property_form.property_bathroom %}<br>
+    Square Feet:{% render_field property_form.property_sq_feet %}<br>
+    Lot Size:{% render_field property_form.property_lot_size %}<br>
+    Garage:{% render_field property_form.property_garage %}<br>
+    Description:{% render_field property_form.property_description %}<br>
+    Upload Images:{% render_field property_image.Property_Images multiple=True %}<br>
+
+    <input type="submit" value="Submit Property">
+</form>
+</body>
+</html>

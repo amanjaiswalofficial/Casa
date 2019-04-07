@@ -1,21 +1,15 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic import FormView
 from .forms import LoginForm
 from django.contrib.auth import authenticate, logout, login
 from registerapp.models import NewUser
-
+from django.contrib import messages
 
 class LoginFormView(FormView):
 
     form_class = LoginForm
     template_name = 'loginapp/login_page.html'
-
-    """def post(self, request, *args, **kwargs):
-        form = LoginForm(self.request.POST)
-        import pdb;
-        pdb.set_trace()
-        """
 
     def form_valid(self, form):
 
@@ -27,12 +21,12 @@ class LoginFormView(FormView):
             self.request.session['logged_in'] = True
             self.request.session['current_user'] = username
             self.request.session['is_seller'] = NewUser.objects.get(username=username).is_seller
+            #FIX GO TO HOME
             return HttpResponse('All set')
         else:
-            #FIX
-            return HttpResponse('invalid user')
+            messages.add_message(self.request, messages.INFO, "Invalid username/password")
+            return redirect('loginapp:check_login')
 
-#CHANGE LOGGED IN VALUE TO FALSE ON LOGOUT
 
 def check_login_function(request):
 
@@ -40,6 +34,14 @@ def check_login_function(request):
     if not already_logged_in:
         return LoginFormView.as_view()(request)
     else:
-        #FIX
+        #FIX GO TO HOME
         return HttpResponse('already logged in brother!')
 
+
+def logout_user(request):
+
+    if request.session.get('logged_in', False):
+        logout(request)
+        return HttpResponse('logged out')
+    else:
+        return HttpResponse('No user is currently logged in')
