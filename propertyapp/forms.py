@@ -18,6 +18,8 @@ class NewPropertyForm(ModelForm):
         model = Property
         fields = [
             'property_title',
+            'property_city',
+            'property_states',
             'property_address',
             'property_pin',
             'property_price',

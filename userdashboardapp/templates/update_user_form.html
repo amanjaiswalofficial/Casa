@@ -1,7 +1,7 @@
 {% load widget_tweaks %}
 {% load crispy_forms_tags %}
 <html>
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     First Name: <input type="text" value="{{user.first_name}}" name="first_name"><br>
     Last Name: <input type="text" value="{{user.last_name}}" name="last_name"><br>

@@ -1,0 +1,33 @@
+<html>
+<head>
+</head>
+<body>
+<div style="border: 1px solid red;width:300px;height:400px">
+    <div style="border: 1px solid black; width:300px;height:50%;display:block">
+    {% block image_one %}{%endblock image_one %}
+    </div>
+    <div style="border: 1px solid black;height:150px">
+        <div style="border: 1px solid blue;height:35%">
+            <div style="border: 1px solid green;height:50%">{% block name_one %}{% endblock name_one %}</div>
+            <div style="height:50%">{% block address_one%}{% endblock address_one%}</div>
+        </div>
+        <div style="border: 1px solid yellow;height:65%">
+            <table style="width:100%;height:100%">
+                <tr style="border:1px solid blue">
+                    <td>{% block size_one %}{% endblock size_one %}</td>
+                    <td>{% block garage_one %}{% endblock garage_one%}</td>
+                </tr>
+                <tr>
+                    <td>{% block bedroom_one %}{% endblock bedroom_one%}</td>
+                    <td>{% block bath_one %}{%endblock bath_one %}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div style="border: 1px solid black;height:45px;">
+        {%block price_one %}{%endblock price_one%}
+    </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{% extends "single_property_template.html" %}
+{% block image_one %}
+<img src="{{property_images.property_image.url}}" style="max-width:100%">
+{%endblock image_one %}
+{% block name_one %}
+Name:{{property.property_title}}
+{% endblock name_one %}
+{% block address_one%}
+Address:{{property.property_address}}
+{% endblock address_one%}
+{% block size_one %}
+Area:{{property.property_sq_feet}}
+{% endblock size_one %}
+{% block garage_one %}
+Garage:{{property.property_garage}}
+{% endblock garage_one%}
+{% block bedroom_one %}
+Bedrooms:{{property.property_bedroom}}
+{% endblock bedroom_one%}
+{% block bath_one %}
+Bathrooms:{{property.property_bathroom}}
+{%endblock bath_one %}
+{%block price_one %}
+Price:{{property.property_price}}
+{%endblock price_one%}

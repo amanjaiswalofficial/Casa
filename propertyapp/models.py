@@ -1,13 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-property_city = (
+PROPERTY_CITY_CHOICES = (
         ('Kanpur', 'Kanpur'),
         ('New Delhi', 'New Delhi'),
         ('Ghaziabad', 'Ghaziabad'),
         ('Chandigarh', 'Chandigarh'),
     )
-property_state = (
+PROPERTY_STATE_CHOICES = (
         ('Uttar Pradesh', 'Uttar Pradesh'),
         ('Delhi', 'Delhi'),
         ('Karnataka', 'Karnataka'),
@@ -20,6 +20,8 @@ class Property(models.Model):
     property_poster = models.ForeignKey(User, related_name='propertyposter', on_delete=models.CASCADE)
     property_title = models.CharField(max_length=20)
     property_address = models.CharField(max_length=20)
+    property_city = models.CharField(max_length=20, choices=PROPERTY_CITY_CHOICES)
+    property_states = models.CharField(max_length=20, choices=PROPERTY_STATE_CHOICES)
     property_pin = models.IntegerField(blank=False)
     property_price = models.IntegerField(blank=False)
     property_bedroom = models.IntegerField(blank=False)

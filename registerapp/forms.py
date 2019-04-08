@@ -8,5 +8,5 @@ class NewUserForm(UserCreationForm):
         model = NewUser
         fields = ['username', 'email_field',
                   'first_name', 'password1',
-                  'last_name', 'description',
+                  'last_name', 'description','phone_number',
                   'profile_image', 'is_seller']

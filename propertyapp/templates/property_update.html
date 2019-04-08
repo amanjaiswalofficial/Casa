@@ -1,0 +1,20 @@
+{% load widget_tweaks %}
+<html>
+<body>
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+Title:<input type="text" value="{{property.property_title}}" name="property_title"><br>
+Address:<input type="text" value="{{property.property_address}}" name="property_address"><br>
+Address:<input type="number" value="{{property.property_pin}}" name="property_pin"><br>
+Price:<input type="number" value="{{property.property_price}}" name="property_price"><br>
+Bedroom:<input type="number" value="{{property.property_bedroom}}" name="property_bedroom"><br>
+Bathroom:<input type="number" value="{{property.property_bathroom}}" name="property_bathroom"><br>
+Square Feet:<input type="number" value="{{property.property_sq_feet}}" name="property_sq_feet"><br>
+Lot Size:<input type="number" value="{{property.property_lot_size}}" name="property_lot_size"><br>
+Garage:<input type="number" value="{{property.property_garage}}" name="property_garage"><br>
+Description:<input type="text" value="{{property.property_description}}" name="property_description"><br>
+Upload Images:<input type="file" multiple value="{{property_images}}" name="property_images"><br>
+<input type="submit" value="Update Property" name="update_property">
+</form>
+</body>
+</html>

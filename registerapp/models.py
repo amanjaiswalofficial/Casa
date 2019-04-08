@@ -3,6 +3,7 @@ from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
+from django.views import View
 
 username_pattern = '^[A-Za-z][\d\w.]{8,16}'
 valid_name_pattern = '[A-Za-z\s]'
@@ -14,9 +15,12 @@ class NewUser(User):
     email_field = models.EmailField(max_length=30,
                                     unique=True,
                                     blank=False)
+    phone_number=models.IntegerField(blank=False)
     description = models.TextField()
     profile_image = models.ImageField(upload_to='user_images/', default='register_app/blank_face.png')
     is_seller = models.BooleanField(default=False)
 
     def get_absolute_url(self):
         return reverse('success')
+
+

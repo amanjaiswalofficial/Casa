@@ -4,6 +4,8 @@
 <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     Title:{% render_field property_form.property_title %}<br>
+    City: {% render_field property_form.property_city %}<br>
+    State: {% render_field property_form.property_states %}<br>
     Address:{% render_field property_form.property_address %}<br>
     PIN Code:{% render_field property_form.property_pin %}<br>
     Price:{% render_field property_form.property_price %}<br>
