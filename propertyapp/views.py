@@ -92,6 +92,7 @@ class ExistingProperty(View):
                 setattr(current_property,field,int(self.request.POST.get(field)))
             current_property.save()
             print(current_property.id)
+            #if len(current_property)
             PropertyImages.objects.filter(property_name_id=current_property.id).delete()
             total_uploads = 5 if len(images_uploaded) > 5 else len(images_uploaded)
             for i in range(total_uploads):
@@ -108,3 +109,9 @@ class GetEnquiry(View):
 
     def post(self):
         pass
+
+def show_featured_page(request):
+    p_one = Property.objects.get(pk=1)
+    p_one_images = PropertyImages.objects.filter(property_name_id=p_one.id)[0]
+    print(p_one_images)
+    return render(request,'property_featured_old.html', {'p_one': p_one, 'p_one_images': p_one_images})

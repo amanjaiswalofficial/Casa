@@ -1,25 +1,233 @@
-{% extends "single_property_template.html" %}
-{% block image_one %}
-<img src="{{property_images.property_image.url}}" style="max-width:100%">
-{%endblock image_one %}
-{% block name_one %}
-Name:{{property.property_title}}
-{% endblock name_one %}
-{% block address_one%}
-Address:{{property.property_address}}
-{% endblock address_one%}
-{% block size_one %}
-Area:{{property.property_sq_feet}}
-{% endblock size_one %}
-{% block garage_one %}
-Garage:{{property.property_garage}}
-{% endblock garage_one%}
-{% block bedroom_one %}
-Bedrooms:{{property.property_bedroom}}
-{% endblock bedroom_one%}
-{% block bath_one %}
-Bathrooms:{{property.property_bathroom}}
-{%endblock bath_one %}
-{%block price_one %}
-Price:{{property.property_price}}
-{%endblock price_one%}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Casa</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="" />
+<meta name="author" content="http://webthemez.com" />
+<!-- css --> 
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'materialize/css/materialize.min.css' %}" media="screen,projection" />
+<link href="{% static 'css/css_template/bootstrap.min.css' %}" rel="stylesheet" />
+<link href="{% static 'css/css_template/fancybox/jquery.fancybox.css' %}" rel="stylesheet">
+<link href="{% static 'css/css_template/flexslider.css' %}" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/css_template/zoomslider.css' %}" />
+<link href="{% static 'css/css_template/style.css' %}" rel="stylesheet" />
+ 
+<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+</head>
+<body>
+<div id="wrapper" class="home-page">
+	<!-- start header -->
+	<header>
+        <div class="navbar navbar-default navbar-static-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="index.html"><i class="icon-info-blocks material-icons">account_balance</i>Casa</a>
+                </div>
+                <div class="navbar-collapse collapse ">
+                    <ul class="nav navbar-nav">
+                        <li class="HillSide"><a class="waves-effect waves-dark" href="#">Home</a></li>
+						<li><a class="waves-effect waves-dark" href="{% url 'propertyapp:showfeaturedpage' %}">Featured</a></li>
+                        <li><a class="waves-effect waves-dark" href="portfolio.html">Register</a></li>
+                        <li><a class="waves-effect waves-dark" href="{% url 'loginapp:check_login' %}">Login</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+	</header>
+	<!-- end header -->
+	<section id="banner">
+	 
+	<!-- Slider -->
+	<div id="demo-1" data-zs-src='["{% static 'img/photos/img1.jpg' %}", "{% static 'img/photos/img2.jpg' %}", "{% static 'img/photos/img3.jpg' %}"]' data-zs-overlay="dots">
+		<div class="demo-inner-content">
+			<h1><span>CASA</span></h1><br/>
+			<p>International Real Estate Venture</p>
+		</div>
+	</div>
+	<!-- end slider --> 
+	</section>  
+		<section class="projects">
+		<div class="container">
+	 	<div class="row">
+			<div class="col-md-12">
+				<div class="aligncenter"><h2 class="aligncenter">Our Featured Properties</h2>Following are the most recent properties posted</div>
+				<br/>
+			</div>
+		</div>
+	
+	<div class="row service-v1 margin-bottom-40">
+            <div class="col-md-4 md-margin-bottom-40">
+					<div class="card small">
+                        <div class="card-image">
+                             <img class="img-responsive" src="{% block img_one%}{% endblock img_one%}" style="max-width:100%">
+                        </div>
+                        <div class="card-content"> 
+                            <p>
+                                <span class="price">{%block price_one %}{%endblock price_one%}</span>
+								<h4>{% block title_one %}{% endblock title_one %}</h4>
+								<h5>{% block city_one %}{% endblock city_one %}</h5>
+								<a href="details.html" class="btn btn-details">BUY</a>
+                            </p>
+                        </div>
+                    </div>        
+            </div>
+			   <div class="col-md-4 md-margin-bottom-40">
+					<div class="card small">
+                        <div class="card-image">
+                             <img class="img-responsive" src="{% block img_two%}{% endblock img_two%}" alt="">
+                        </div>
+                        <div class="card-content">
+                           <p>
+                                <span class="price">{% block price_two%}{% endblock price_two%}</span>
+								<h4>{% block title_two%}{% endblock title_two%}</h4>
+								<h5>{% block city_two%}{% endblock city_two%}</h5>
+								<a href="details.html" class="btn btn-details">{% block desc_two%}{% endblock desc_two%}</a>
+                            </p>
+                        </div>
+                    </div>        
+            </div>
+			   <div class="col-md-4 md-margin-bottom-40">
+					<div class="card small">
+                        <div class="card-image">
+                             <img class="img-responsive" src="{% block img_three%}{% endblock img_three%}" alt="">
+                        </div>
+                        <div class="card-content">
+                           <p>
+                                <span class="price">{% block price_three%}{% endblock price_three%}</span>
+								<h4>{% block title_three%}{% endblock title_three%}</h4>
+								<h5>{% block city_three%}{% endblock city_three%}</h5>
+								<a href="details.html" class="btn btn-details">{% block desc_three%}{% endblock desc_three%}</a>
+                            </p>
+                        </div>
+                    </div>        
+            </div> 
+        </div>
+		</div>
+		</section>
+	<section id="content"> 
+	<div class="container">
+	
+		<section class="services">
+	    	<div class="row">
+			<div class="col-md-12">
+				<div class="aligncenter"><h2 class="aligncenter">Amenities</h2></div>
+				<br/>
+			</div>
+		</div>
+
+	 <div class="row">
+            <div class="col-sm-4 info-blocks"> 
+				<i class="icon-info-blocks material-icons">track_changes</i>
+                <div class="info-blocks-in">
+                    <h3>Kids Play Area</h3>
+                    <p>All the kids in the society can play various games and sports</p>
+                </div>
+            </div>
+            <div class="col-sm-4 info-blocks">
+                <i class="icon-info-blocks material-icons">settings_input_svideo</i>
+                <div class="info-blocks-in">
+                    <h3>Gym</h3>
+                    <p>Hi quality equipments available for use 24x7</p>
+                </div>
+            </div>
+            <div class="col-sm-4 info-blocks">
+                <i class="icon-info-blocks material-icons">queue_music</i>
+                <div class="info-blocks-in">
+                    <h3>Running Track</h3>
+                    <p>Atleast a minimum of 3 mile space for runners</p>
+                </div>
+            </div>
+        </div>
+<div class="row">
+            <div class="col-sm-4 info-blocks">
+                <i class="icon-info-blocks material-icons">my_location</i>
+                <div class="info-blocks-in">
+                    <h3>Swimming</h3>
+                    <p>Swimming pools available during summer for kids and family</p>
+                </div>
+            </div>
+            <div class="col-sm-4 info-blocks">
+                <i class="icon-info-blocks material-icons">shuffle</i>
+                <div class="info-blocks-in">
+                    <h3>Club House</h3>
+                    <p>Enjoy all the fun activities and functions going on in the society's club house</p>
+                </div>
+            </div>
+            <div class="col-sm-4 info-blocks">
+                <i class="icon-info-blocks material-icons">tab_unselected</i>
+                <div class="info-blocks-in">
+                    <h3>24/7 Security</h3>
+                    <p>Good security and 24x7 surveillance around the block</p>
+                </div>
+            </div>
+        </div>
+		</section>
+	</div>
+	</section>
+	
+	<section class="section-padding gray-bg">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="section-title text-center">
+						<h2>Our Team</h2>
+						<p>Django Boys</p>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+			
+				<div class="col-md-6 col-sm-6">
+					<div class="about-image">
+						<img src="{% static 'img/about.jpg' %}" alt="About Images">
+					</div>
+				</div>
+				<div class="col-md-6 col-sm-6">
+					<div class="about-text">
+					<h3>About Us</h3>
+						<p>We are a team of highly dedicated programmers, working 24x7 if need be just to finish the project in time</p>
+						<a href="#" class="btn btn-primary waves-effect waves-dark">Learn More</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>	  
+	
+ 
+
+</div>
+<a href="#" class="scrollup waves-effect waves-dark"><i class="fa fa-angle-up HillSide"></i></a>
+<!-- javascript
+    ================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="{% static 'js/js_template/jquery.js' %}"></script>
+<script src="{% static 'js/js_template/js/jquery.easing.1.3.js' %}"></script>
+<script src="{% static 'materialize/js/materialize.min.js' %}"></script>
+<script src="{% static 'js/js_template/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/js_template/jquery.fancybox.pack.js' %}"></script>
+<script src="{% static 'js/js_template/jquery.fancybox-media.js' %}"></script>
+<script src="{% static 'js/js_template/jquery.flexslider.js' %}"></script>
+<script src="{% static 'js/js_template/animate.js' %}"></script>
+<!-- Vendor Scripts -->
+<script src="{% static 'js/js_template/modernizr.custom.js' %}"></script>
+<script src="{% static 'js/js_template/jquery.zoomslider.min.js' %}"></script>
+<script src="{% static 'js/js_template/jquery.isotope.min.js' %}"></script>
+<script src="{% static 'js/js_template/jquery.magnific-popup.min.js' %}"></script>
+<script src="{% static 'js/js_template/animate.js' %}"></script>
+<script src="{% static 'js/js_template/custom.js' %}"></script>
+</body>
+</html>
