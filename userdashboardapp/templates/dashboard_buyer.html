@@ -1,2 +1,14 @@
 {% include 'dashboard.html' %}
-Inside buyer
+{% if queries_made %}
+    QUERIES MADE
+    {%for query in queries_made %}
+        <div style="width:500px;height:40px;border:1px solid red">
+            <div style="width:20%;border:1px solid blue;float:left;height:38px">
+                {{query.enquiry_property.property_title}}
+            </div>
+            <div style="width:79%;border:1px solid green;float:left ">
+                {{query.enquiry_description}}
+            </div>
+        </div>
+{% endfor %}
+{% endif %}

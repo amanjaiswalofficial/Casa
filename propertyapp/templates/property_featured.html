@@ -1,3 +1,4 @@
+
 {% load static %}
 
 <!DOCTYPE html>
@@ -8,7 +9,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="description" content="" />
 <meta name="author" content="http://webthemez.com" />
-<!-- css --> 
+<!-- css -->
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'materialize/css/materialize.min.css' %}" media="screen,projection" />
 <link href="{% static 'css/css_template/bootstrap.min.css' %}" rel="stylesheet" />
@@ -16,7 +17,7 @@
 <link href="{% static 'css/css_template/flexslider.css' %}" rel="stylesheet" />
 <link rel="stylesheet" type="text/css" href="{% static 'css/css_template/zoomslider.css' %}" />
 <link href="{% static 'css/css_template/style.css' %}" rel="stylesheet" />
- 
+
 <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
 <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -24,6 +25,7 @@
 
 </head>
 <body>
+
 <div id="wrapper" class="home-page">
 	<!-- start header -->
 	<header>
@@ -35,14 +37,25 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="index.html"><i class="icon-info-blocks material-icons">account_balance</i>Casa</a>
+                    <a class="navbar-brand" href="{% url 'propertyapp:showfeaturedpage' %}"><i class="icon-info-blocks material-icons">account_balance</i>Casa</a>
                 </div>
                 <div class="navbar-collapse collapse ">
                     <ul class="nav navbar-nav">
                         <li class="HillSide"><a class="waves-effect waves-dark" href="#">Home</a></li>
 						<li><a class="waves-effect waves-dark" href="{% url 'propertyapp:showfeaturedpage' %}">Featured</a></li>
-                        <li><a class="waves-effect waves-dark" href="portfolio.html">Register</a></li>
-                        <li><a class="waves-effect waves-dark" href="{% url 'loginapp:check_login' %}">Login</a></li>
+                        {% if logged_in %}
+                            <li><a class="waves-effect waves-dark" href="{% url 'userdashboardapp:userdashboard' %}">
+                                {% if is_seller %}
+                                    {{user_first_name}}|Seller
+                                {% else %}
+                                    {{user_first_name}}|Buyer
+                                {% endif %}
+                            </a></li>
+                            <li><a class="waves-effect waves-dark" href="{% url 'logoutapp' %}">Logout</a></li>
+                        {% else %}
+                            <li><a class="waves-effect waves-dark" href="{% url 'registerapp:newuserview' %}">Register</a></li>
+                            <li><a class="waves-effect waves-dark" href="{% url 'loginapp:check_login' %}">Login</a></li>
+                        {% endif %}
                     </ul>
                 </div>
             </div>
@@ -50,7 +63,7 @@
 	</header>
 	<!-- end header -->
 	<section id="banner">
-	 
+
 	<!-- Slider -->
 	<div id="demo-1" data-zs-src='["{% static 'img/photos/img1.jpg' %}", "{% static 'img/photos/img2.jpg' %}", "{% static 'img/photos/img3.jpg' %}"]' data-zs-overlay="dots">
 		<div class="demo-inner-content">
@@ -58,8 +71,8 @@
 			<p>International Real Estate Venture</p>
 		</div>
 	</div>
-	<!-- end slider --> 
-	</section>  
+	<!-- end slider -->
+	</section>
 		<section class="projects">
 		<div class="container">
 	 	<div class="row">
@@ -68,59 +81,31 @@
 				<br/>
 			</div>
 		</div>
-	
+
 	<div class="row service-v1 margin-bottom-40">
+            {% for item in final_property %}
             <div class="col-md-4 md-margin-bottom-40">
 					<div class="card small">
                         <div class="card-image">
-                             <img class="img-responsive" src="{% block img_one%}{% endblock img_one%}" style="max-width:100%">
+                             <img class="img-responsive" src="{{item.1.property_image.url}}" style="max-width:100%;height:200px">
                         </div>
-                        <div class="card-content"> 
+                        <div class="card-content">
                             <p>
-                                <span class="price">{%block price_one %}{%endblock price_one%}</span>
-								<h4>{% block title_one %}{% endblock title_one %}</h4>
-								<h5>{% block city_one %}{% endblock city_one %}</h5>
-								<a href="details.html" class="btn btn-details">BUY</a>
+                                <span class="price">{{item.0.property_price}}</span>
+								<h4>{{item.0.property_title}}</h4>
+								<h5>{{item.0.property_city}}</h5>
+								<a href="{%url 'propertyapp:existingproperty' id=item.0.id %}" class="btn btn-details">BUY</a>
                             </p>
                         </div>
-                    </div>        
+                    </div>
             </div>
-			   <div class="col-md-4 md-margin-bottom-40">
-					<div class="card small">
-                        <div class="card-image">
-                             <img class="img-responsive" src="{% block img_two%}{% endblock img_two%}" alt="">
-                        </div>
-                        <div class="card-content">
-                           <p>
-                                <span class="price">{% block price_two%}{% endblock price_two%}</span>
-								<h4>{% block title_two%}{% endblock title_two%}</h4>
-								<h5>{% block city_two%}{% endblock city_two%}</h5>
-								<a href="details.html" class="btn btn-details">{% block desc_two%}{% endblock desc_two%}</a>
-                            </p>
-                        </div>
-                    </div>        
-            </div>
-			   <div class="col-md-4 md-margin-bottom-40">
-					<div class="card small">
-                        <div class="card-image">
-                             <img class="img-responsive" src="{% block img_three%}{% endblock img_three%}" alt="">
-                        </div>
-                        <div class="card-content">
-                           <p>
-                                <span class="price">{% block price_three%}{% endblock price_three%}</span>
-								<h4>{% block title_three%}{% endblock title_three%}</h4>
-								<h5>{% block city_three%}{% endblock city_three%}</h5>
-								<a href="details.html" class="btn btn-details">{% block desc_three%}{% endblock desc_three%}</a>
-                            </p>
-                        </div>
-                    </div>        
-            </div> 
+            {% endfor %}
         </div>
 		</div>
 		</section>
-	<section id="content"> 
+	<section id="content">
 	<div class="container">
-	
+
 		<section class="services">
 	    	<div class="row">
 			<div class="col-md-12">
@@ -130,7 +115,7 @@
 		</div>
 
 	 <div class="row">
-            <div class="col-sm-4 info-blocks"> 
+            <div class="col-sm-4 info-blocks">
 				<i class="icon-info-blocks material-icons">track_changes</i>
                 <div class="info-blocks-in">
                     <h3>Kids Play Area</h3>
@@ -178,7 +163,7 @@
 		</section>
 	</div>
 	</section>
-	
+
 	<section class="section-padding gray-bg">
 		<div class="container">
 			<div class="row">
@@ -190,7 +175,7 @@
 				</div>
 			</div>
 			<div class="row">
-			
+
 				<div class="col-md-6 col-sm-6">
 					<div class="about-image">
 						<img src="{% static 'img/about.jpg' %}" alt="About Images">
@@ -205,9 +190,9 @@
 				</div>
 			</div>
 		</div>
-	</section>	  
-	
- 
+	</section>
+
+
 
 </div>
 <a href="#" class="scrollup waves-effect waves-dark"><i class="fa fa-angle-up HillSide"></i></a>

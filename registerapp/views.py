@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic.edit import FormView
 from .forms import NewUserForm
 
@@ -12,7 +12,7 @@ class NewUserView(FormView):
     def form_valid(self, form):
         form.save()
         #change to go somewhere else
-        return HttpResponse('all set')
+        return redirect('propertyapp:showfeaturedpage')
 
     def form_invalid(self, form):
         """if invalid return error and back to it"""

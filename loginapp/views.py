@@ -21,14 +21,13 @@ class LoginFormView(FormView):
             self.request.session['logged_in'] = True
             self.request.session['current_user'] = username
             self.request.session['is_seller'] = NewUser.objects.get(username=username).is_seller
-            #FIX GO TO HOME
-            return HttpResponse('All set')
+            return redirect('propertyapp:showfeaturedpage')
         else:
             messages.add_message(self.request, messages.INFO, "Invalid username/password")
             return redirect('loginapp:check_login')
 
 
-def check_login_function(request):
+def check_user_login(request):
 
     already_logged_in = request.session.get('logged_in', False)
     if not already_logged_in:
@@ -42,6 +41,6 @@ def logout_user(request):
 
     if request.session.get('logged_in', False):
         logout(request)
-        return HttpResponse('logged out')
+        return redirect('propertyapp:showfeaturedpage')
     else:
         return HttpResponse('No user is currently logged in')

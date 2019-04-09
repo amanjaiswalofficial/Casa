@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -59,4 +60,18 @@ Title:{{property.property_title}}<br>
     Lot Size:{{property.property_lot_size}}<br>
     Garages:{{property.property_garage}}<br>
     Description:{{property.property_description}}
+
+
+{% if logged_in %}
+    {% if is_not_seller %}
+        {% if no_query_made %}
+            {% include 'enquiry_form.html' %}
+        {% else %}
+            You have already inquired for this form
+        {% endif %}
+    {% endif %}
+{% else %}
+    Login To Post A Query
+    <a href="{% url 'loginapp:check_login' %}"><input type="submit" value="Login" style="decoration:none"></a>
+{% endif %}
 </html>

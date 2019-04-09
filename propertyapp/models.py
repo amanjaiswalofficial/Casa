@@ -38,3 +38,12 @@ class PropertyImages(models.Model):
     property_name = models.ForeignKey(Property, related_name='propertyname', on_delete=models.CASCADE)
     property_image = models.ImageField(upload_to='property/', default='property/default/blank_home.jpg')
 
+
+class Enquiry(models.Model):
+    enquiry_person_mail = models.EmailField(default='')
+    enquiry_property = models.ForeignKey(Property, on_delete=models.CASCADE, default='')
+    enquiry_description = models.TextField(max_length=200, blank=False)
+    enquiry_date = models.DateTimeField(auto_now_add=True, editable=False)
+
+    def __str__(self):
+        return self.enquiry_person_mail

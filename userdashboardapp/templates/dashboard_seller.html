@@ -1,2 +1,36 @@
 {% include 'dashboard.html' %}
-Inside seller
+{% if posted_properties %}
+{% for properties in posted_properties %}
+
+{% endfor %}
+{% endif %}
+{% if queries_for_seller %}
+    Queries Made by User
+    {% for queries in queries_for_seller %}
+        <div style="border: 1px solid black; width:1000px">
+            <div style="width:100%;display:block">
+                <div style="float:left;width:20%">
+                    {{queries.enquiry_person_mail}}
+                </div>
+                <div style="float:left;width:20%">
+                    {{queries.enquiry_date}}
+                </div>
+                <div style="float:left;width:10%">
+                    {{queries.enquiry_property.property_title}}
+                </div>
+                <div style="float:left;width:40%">
+                    {{queries.enquiry_description}}
+                </div>
+            </div>
+            <div style="width:100%;display:block">
+                {% if reply_made %}
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="text" style="width:100%" name="query_response">
+                        <input type="submit" value="Reply" name="query_response_button">
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+{% endif %}

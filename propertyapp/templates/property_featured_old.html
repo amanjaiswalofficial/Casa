@@ -1,18 +1,5 @@
-{% extends "property_featured.html" %}
 
-{% block img_one %}
-{{p_one_images.property_image.url}}
-{%endblock img_one %}
-
-{% block title_one %}
-{{p_one.property_title}}
-{% endblock title_one %}
-
-{% block city_one%}
-{{p_one.property_city}}
-{% endblock city_one%}
-
-{% block price_one%}
-{{p_one.property_price}}
-{% endblock price_one%}
-
+{% for i in final_property %}
+{{i.0.property_title}}
+{{i.1.property_image}}
+{% endfor %}

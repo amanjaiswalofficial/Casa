@@ -1,9 +1,9 @@
 from django.urls import path
-from .views import check_login_function
+from .views import check_user_login
 
 app_name = 'loginapp'
 
 
 urlpatterns = [
-    path('',check_login_function, name='check_login')
+    path('',check_user_login, name='check_login')
     ]
