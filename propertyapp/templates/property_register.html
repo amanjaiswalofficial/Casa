@@ -1,11 +1,30 @@
+{% include 'header_template.html' %}
 <html>
 {% load widget_tweaks %}
+
 <body>
+
 <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
+
     Title:{% render_field property_form.property_title %}<br>
-    City: {% render_field property_form.property_city %}<br>
-    State: {% render_field property_form.property_states %}<br>
+    City:<br>  <select name="select_city" style="width:200px;height:30px;float:left;margin-left:2px;margin-top:10px" class="btn btn-secondary dropdown-toggle">
+                <option selected="selected" disabled>Select City</option>
+                <option value="Kanpur">Kanpur</option>
+                <option value="New Delhi">New Delhi</option>
+                <option value="Ghaziabad">Ghaziabad</option>
+                <option value="Chandigarh">Chandigarh</option>
+            </select>
+    <br><br>
+    State:
+    <br><select name="select_state" style="width:200px;height:30px;float:left;margin-left:2px;margin-top:10px" class="btn btn-secondary dropdown-toggle">
+                <option selected="selected" disabled>Select State</option>
+                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                <option value="Delhi">Delhi</option>
+                <option value="Karnataka">Karnataka</option>
+                <option value="Punjab">Punjab</option>
+            </select>
+    <br><br>
     Address:{% render_field property_form.property_address %}<br>
     PIN Code:{% render_field property_form.property_pin %}<br>
     Price:{% render_field property_form.property_price %}<br>

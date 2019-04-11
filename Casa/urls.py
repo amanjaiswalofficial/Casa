@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from registerapp.views import NewUserView
+from registerapp.views import NewUserRegistration
 from loginapp.views import logout_user
 from django.conf.urls.static import static
 from django.conf import settings

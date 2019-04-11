@@ -1,0 +1,59 @@
+{% include 'header_template.html' %}
+<html>
+<br>
+{% if properties %}
+<div class="row service-v1 margin-bottom-40">
+            {% for item in properties %}
+            <div class="col-md-4 md-margin-bottom-40">
+					<div class="card small">
+                        <div class="card-image">
+                             <img class="img-responsive" src="{{item.1.property_image.url}}" style="max-width:100%;height:200px">
+                        </div>
+                        <div class="card-content">
+                            <p>
+                                <span class="price">{{item.0.property_price}}</span>
+								<h4>{{item.0.property_title}}</h4>
+								<h5>{{item.0.property_city}}</h5>
+								<a href="{%url 'propertyapp:existingproperty' id=item.0.id %}" class="btn btn-details">BUY/RENT</a>
+                            </p>
+                        </div>
+                    </div>
+            </div>
+            {% endfor %}
+        </div>
+		</div>
+
+<div style="width:100%">
+  <center>
+    {% if properties.has_other_pages %}
+  <ul class="pagination">
+    {% if properties.has_previous %}
+      <li><a href="?page={{ properties.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    {% for i in properties.paginator.page_range %}
+      {% if properties.number == i %}
+        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+      {% else %}
+        <li><a href="?page={{ i }}">{{ i }}</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if properties.has_next %}
+      <li><a href="?page={{ properties.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+{% endif %}
+
+  </center>
+</div>
+
+{% else %}
+<h3>
+  No Results Matching The Query, Please Refine the search
+</h3>
+{% endif %}
+
+</html>

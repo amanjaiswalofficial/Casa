@@ -1,36 +1,71 @@
+{% include 'header_template.html' %}
 {% include 'dashboard.html' %}
-{% if posted_properties %}
-{% for properties in posted_properties %}
 
-{% endfor %}
-{% endif %}
+<div class="container">
+<div class="span3 well">
+    {% if final_properties %}
+        <table>
+            <tr>
+                <th>Image</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Options</th>
+            </tr>
+
+                    {% for property in final_properties %}
+                        <tr style="height:150px">
+                            <td><img src="{{property.1.property_image.url}}" style="width:200px;height:130px;object-fit:cover;margin-left:8px"></td>
+                            <td> {{property.0.property_title}}</td>
+                            <td>{{property.0.property_description}}</td>
+                            <td>{{property.0.property_price}}</td>
+                            <td>
+                                <a href="{% url 'propertyapp:existingproperty' id=property.0.id %}" style="text-decoration:none"><input type="submit" value="Update"></a>
+                                <a href="{% url 'propertyapp:deleteproperty' pk=property.0.id %}" style="text-decoration:none"><input type="submit" value="Delete"></a>
+                            </td>
+                        </tr>
+                     {% endfor %}
+        </table>
+    {% else %}
+        <h4>No properties posted yet</h4>
+    {% endif %}
+</div>
+</div>
+<div class="container">
+<div class="span3 well">
 {% if queries_for_seller %}
-    Queries Made by User
+    <center>
+        <h4>Queries Made by User</h4>
+
+    <table>
+        <tr>
+            <th>Buyer's email</th>
+            <th>Time</th>
+            <th>Property</th>
+            <th>Query</th>
+        </tr>
     {% for queries in queries_for_seller %}
-        <div style="border: 1px solid black; width:1000px">
-            <div style="width:100%;display:block">
-                <div style="float:left;width:20%">
-                    {{queries.enquiry_person_mail}}
-                </div>
-                <div style="float:left;width:20%">
-                    {{queries.enquiry_date}}
-                </div>
-                <div style="float:left;width:10%">
-                    {{queries.enquiry_property.property_title}}
-                </div>
-                <div style="float:left;width:40%">
-                    {{queries.enquiry_description}}
-                </div>
-            </div>
-            <div style="width:100%;display:block">
-                {% if reply_made %}
-                    <form method="POST">
-                        {% csrf_token %}
-                        <input type="text" style="width:100%" name="query_response">
-                        <input type="submit" value="Reply" name="query_response_button">
-                    </form>
-                {% endif %}
-            </div>
-        </div>
-    {% endfor %}
+        <tr>
+            <td>
+                {{queries.enquiry_user.email_field}}
+            </td>
+            <td>
+                {{queries.date}}
+            </td>
+            <td>
+                {{queries.property.property_title}}
+            </td>
+            <td>
+                {{queries.description}}
+            </td>
+        </tr>
+      {% endfor %}
+    </table>
+    </center>
+{% else %}
+    <h4>No queries made yet for your posted properties</h4>
 {% endif %}
+</div>
+</div>
+
+

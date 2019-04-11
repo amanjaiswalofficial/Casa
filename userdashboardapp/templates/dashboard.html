@@ -1,12 +1,56 @@
 <html>
-<img src="{{user.profile_image.url}}" height="500" width="500" style="border-radius:50%"><br>
-{{user.username}}<br>
-{{user.profile_image}}
-{{user.first_name}} {{user.last_name}}<br>
-{{user.email_field}}<br>
-{{user.description}}
-<form method="POST">
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+
+<div class="container">
+    <div class="span3 well">
+        <center>
+        <a href="#aboutModal" data-toggle="modal" data-target="#myModal"><img src="{{user.profile_image.url}}" style="object-fit:cover" name="aboutme" width="200" height="200" class="img-circle"></a>
+        <h3>{{user.first_name}} {{user.last_name}}</h3>
+        <em>click my face for more</em>
+		</center>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title" id="myModalLabel">More About {{user.first_name}}</h4>
+                    </div>
+                <div class="modal-body">
+                    <center>
+                    <img src="{{user.profile_image.url}}" name="aboutme" width="200" height="200" border="0" class="img-circle" style="object-fit:cover"></a>
+                    <h3 class="media-heading">{{user.first_name}} <small>India</small></h3>
+                    <hr>
+                    <center>
+                    <p class="text-left"><strong>Username: </strong>
+                        {{user.username}}
+                    <br>
+                        <p class="text-left"><strong>Full Name: </strong>
+                        {{user.first_name}} {{user.last_name}}
+                    <br>
+                        <p class="text-left"><strong>About Me: </strong>
+                        {{user.description}}
+                    <br>
+                        <p class="text-left"><strong>Email: </strong>
+                        {{user.email_field}}
+                    <br>
+                    </center>
+                </div>
+                <div class="modal-footer">
+                    <center>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Go Back</button>
+                    </center>
+                    <form method="POST">
     {% csrf_token %}
-    <input type="Submit" name="update_profile_button" value="Click To Update Profile">
+    <input type="Submit" class="btn btn-default" name="update_profile_button" value="Update">
 </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </html>

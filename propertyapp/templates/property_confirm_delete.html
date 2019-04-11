@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+{% ifequal request.session.current_user|slugify object.property_poster|slugify %}
+<form method="POST">
+    Confirm To Delete {{object.property_title}} ??
+    <input type="submit" value="Click To Confirm">
+</form>
+{% endifequal %}
+
+</body>
+</html>

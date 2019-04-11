@@ -2,7 +2,7 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect, get_list_or_404
 from django.views import View
 from registerapp.models import NewUser
-from propertyapp.models import Enquiry
+from propertyapp.models import Enquiry, Property, PropertyImages
 from django.contrib import messages
 
 
@@ -26,17 +26,32 @@ class UserDashboardApp(View):
             return redirect('loginapp:check_login')
 
     def show_seller(self, current_user, context):
+        queries_for_seller=[]
         try:
-            queries_for_seller = get_list_or_404(Enquiry, enquiry_property__property_poster_id=current_user.id)
-        except Http404:
+            posted_properties_images = []
+            posted_properties = list(Property.objects.filter(property_poster_id=current_user.id))
+
+            for property in posted_properties:
+                posted_properties_images.append(PropertyImages.objects.filter(property_name_id=property.id)[0])
+            final_property = zip(posted_properties, posted_properties_images)
+            queries_for_seller = get_list_or_404(Enquiry, property__property_poster=current_user)
+        except Property.DoesNotExist:
+            posted_properties = False
+            posted_properties_images = False
+            final_property = False
+        except Enquiry.DoesNotExist:
             queries_for_seller = False
         finally:
             context['queries_for_seller'] = queries_for_seller
+            context['posted_properties'] = posted_properties
+            context['posted_properties_image'] = posted_properties_images
+            context['final_properties'] = final_property
             return render(self.request, 'dashboard_seller.html', context=context)
 
     def show_buyer(self, current_user, context):
+        queries_made=[]
         try:
-            queries_made = get_list_or_404(Enquiry, enquiry_person_mail=current_user.email_field)
+            queries_made = get_list_or_404(Enquiry, enquiry_user=current_user)
         except Http404:
             queries_made = False
         finally:

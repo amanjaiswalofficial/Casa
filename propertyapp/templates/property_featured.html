@@ -18,6 +18,8 @@
 <link rel="stylesheet" type="text/css" href="{% static 'css/css_template/zoomslider.css' %}" />
 <link href="{% static 'css/css_template/style.css' %}" rel="stylesheet" />
 
+
+
 <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
 <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -28,39 +30,7 @@
 
 <div id="wrapper" class="home-page">
 	<!-- start header -->
-	<header>
-        <div class="navbar navbar-default navbar-static-top">
-            <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="{% url 'propertyapp:showfeaturedpage' %}"><i class="icon-info-blocks material-icons">account_balance</i>Casa</a>
-                </div>
-                <div class="navbar-collapse collapse ">
-                    <ul class="nav navbar-nav">
-                        <li class="HillSide"><a class="waves-effect waves-dark" href="#">Home</a></li>
-						<li><a class="waves-effect waves-dark" href="{% url 'propertyapp:showfeaturedpage' %}">Featured</a></li>
-                        {% if logged_in %}
-                            <li><a class="waves-effect waves-dark" href="{% url 'userdashboardapp:userdashboard' %}">
-                                {% if is_seller %}
-                                    {{user_first_name}}|Seller
-                                {% else %}
-                                    {{user_first_name}}|Buyer
-                                {% endif %}
-                            </a></li>
-                            <li><a class="waves-effect waves-dark" href="{% url 'logoutapp' %}">Logout</a></li>
-                        {% else %}
-                            <li><a class="waves-effect waves-dark" href="{% url 'registerapp:newuserview' %}">Register</a></li>
-                            <li><a class="waves-effect waves-dark" href="{% url 'loginapp:check_login' %}">Login</a></li>
-                        {% endif %}
-                    </ul>
-                </div>
-            </div>
-        </div>
-	</header>
+	{% include 'header_template.html' %}
 	<!-- end header -->
 	<section id="banner">
 
@@ -72,6 +42,31 @@
 		</div>
 	</div>
 	<!-- end slider -->
+<header>
+    <div class="navbar navbar-default navbar-static-top">
+        <form method="POST" style="margin-top:10px" action="{% url 'propertyapp:searchproperty' %}">
+            {% csrf_token %}
+            <div class="md-form active-purple active-purple-2 mb-3" style="width:40%;margin-left:20px;margin-top:10px;float:left">
+                <input type="text" name="search_text" value="" placeholder="Enter Property Title">
+            </div>
+            <select name="select_city" style="width:200px;float:left;margin-left:15px;margin-top:10px" class="btn btn-secondary dropdown-toggle">
+                <option selected="selected" disabled>Select City</option>
+                <option value="Kanpur">Kanpur</option>
+                <option value="New Delhi">New Delhi</option>
+                <option value="Ghaziabad">Ghaziabad</option>
+                <option value="Chandigarh">Chandigarh</option>
+            </select>
+             <select name="select_state" style="width:200px;float:left;margin-left:15px;margin-top:10px" class="btn btn-secondary dropdown-toggle">
+                <option selected="selected" disabled>Select State</option>
+                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                <option value="Delhi">Delhi</option>
+                <option value="Karnataka">Karnataka</option>
+                <option value="Punjab">Punjab</option>
+            </select>
+            <input class="btn btn-secondary dropdown-toggle" type="submit" value="Search Property" style="margin-left:10px;margin-top:10px; width:20%">
+        </form>
+    </div>
+    </header>
 	</section>
 		<section class="projects">
 		<div class="container">

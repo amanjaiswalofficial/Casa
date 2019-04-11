@@ -1,13 +1,14 @@
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse_lazy
 from django.views import View
-
+from django.views.generic import DeleteView
 from registerapp.models import NewUser
 from .forms import NewPropertyForm, PropertyImagesForm
 from .models import PropertyImages, Property, Enquiry
 from django.contrib import messages
-
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 string_fields = ['property_title',
                  'property_address',
@@ -33,28 +34,28 @@ def check_session(request, *args):
 def show_property_for_buyer(request,context, current_user, current_property):
     context['is_not_seller'] = True
     current_user = User.objects.get(username=current_user)
-    current_user_mail = NewUser.objects.get(user=current_user).email_field
     try:
-        Enquiry.objects.get(enquiry_property=current_property, enquiry_person_mail=current_user_mail)
-        return render(request, 'property_view.html', context=context)
+        Enquiry.objects.get(property=current_property, enquiry_user=current_user)
+        #return render(request, 'property_view.html', context=context)
+        return render(request, 'property_details.html', context=context)
     except Enquiry.DoesNotExist:
         context['no_query_made'] = True
-        return render(request, 'property_view.html', context=context)
+        return render(request, 'property_details.html', context=context)
 
 
 def show_property_for_seller(request, context, current_user, property_poster):
     if current_user == str(property_poster):
-        return render(request, 'property_update.html', context=context)
+        return render(request, 'property_details.html', context=context)
     else:
-        return render(request, 'property_view.html', context=context)
+        return render(request, 'property_details.html', context=context)
 
 
 def handle_query(request,current_property, current_user, id):
 
     new_enquiry = Enquiry()
-    new_enquiry.enquiry_person_mail = current_user.email_field
-    new_enquiry.enquiry_property = current_property
-    new_enquiry.enquiry_description = request.POST['query_area']
+    new_enquiry.enquiry_user = current_user
+    new_enquiry.property = current_property
+    new_enquiry.description = request.POST['query_area']
     new_enquiry.save()
     return redirect('propertyapp:existingproperty',id=id)
 
@@ -70,7 +71,6 @@ class CreateNewProperty(View):
             return render(request, 'property_register.html', context=context)
         elif not check_session(request,'logged_in'):
             messages.add_message(request, messages.INFO, "Not Logged In, Please login as seller to post a property")
-            #messages.add_message(request, messages.INFO, "Not Logged In as Buyer, Please login as seller to post a property")
         return redirect('loginapp:check_login')
 
     def post(self,request):
@@ -80,17 +80,18 @@ class CreateNewProperty(View):
         if form_data.is_valid():
             property_form = form_data.save(commit=False)
             property_form.property_poster_id = self.request.user.id
+            property_form.property_city = self.request.POST.get('select_city')
+            property_form.property_states = self.request.POST.get('select_state')
             property_form.save()
             total_uploads = 5 if len(images_uploaded) > 5 else len(images_uploaded)
             for i in range(total_uploads):
                 PropertyImages.objects.create(property_image=images_uploaded[i], property_name_id=property_form.id)
-            return HttpResponse('all set')
+            return redirect('propertyapp:showfeaturedpage')
         else:
             return HttpResponse(form_data.errors)
 
 
 class ExistingProperty(View):
-
 
     def get(self, request, id):
         property = Property.objects.get(pk=id)
@@ -106,9 +107,9 @@ class ExistingProperty(View):
                 return show_property_for_buyer(request, context, current_user, property)
             else:
                 return show_property_for_seller(request, context, current_user, property_poster)
-            return render(request, 'property_view.html', context=context)
+            return render(request, 'property_details.html', context=context)
 
-        return render(request, 'property_view.html', context=context)
+        return render(request, 'property_details.html', context=context)
 
     def post(self, request, id):
         current_property = Property.objects.get(pk=id)
@@ -144,21 +145,37 @@ class ExistingProperty(View):
             return handle_query(request, current_property, current_user,id)
 
 
+class DeleteProperty(DeleteView):
+    model = Property
+    template_name = 'property_confirm_delete.html'
+    success_url = reverse_lazy('userdashboardapp:userdashboard')
 
+
+def search_property(request):
+    print(request.POST.get('search_text'))
+    city_search_results = Property.objects.filter(property_city=request.POST.get('select_city', ""))
+    state_search_results = Property.objects.filter(property_states=request.POST.get('select_state', ""))
+    query_result = city_search_results
+    query_result = query_result.union(state_search_results)
+    if request.POST.get('search_text') is not "":
+        text_search_results = Property.objects.filter(property_title__icontains=request.POST.get('search_text'))
+        query_result = query_result.union(text_search_results)
+    return show_property(request, query_result)
 
 
 def show_featured_page(request):
 
     p =[]
     p_images = []
-    indexes = [i for i in range(1,4)]
+    count = len(Property.objects.filter())
+    indexes = [i for i in range(count,count-3,-1)]
     current_user=request.session.get('current_user', None)
     user_name=''
     if current_user is not None:
         user_name = User.objects.get(username = current_user).first_name
     for i in indexes:
         p.append(Property.objects.get(pk=i))
-        image = PropertyImages.objects.filter(property_name_id=p[i-1].id)[0]
+        image = PropertyImages.objects.filter(property_name_id=p[len(p)-1].id)[0]
         p_images.append(image)
     final_p = zip(p, p_images)
     return render(request, 'property_featured.html', {'property': p,
@@ -169,3 +186,21 @@ def show_featured_page(request):
                                                       'user_first_name':user_name,
                                                       'is_seller':request.session.get('is_seller', False)
                                                      })
+
+
+def show_home_page(request):
+
+    properties = Property.objects.all().order_by('-id')
+    print(properties)
+    return show_property(request, properties)
+
+
+def show_property(request, property_set):
+    property_images_set = []
+    for property in property_set:
+        property_images_set.append(PropertyImages.objects.filter(property_name_id=property.id)[0])
+    display_properties = list(zip(property_set, property_images_set))
+    page = request.GET.get('page')
+    paginator = Paginator(display_properties, 6)
+    final_properties = paginator.get_page(page)
+    return render(request, 'property_home.html', {'properties': final_properties})

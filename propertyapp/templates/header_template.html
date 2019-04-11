@@ -1,0 +1,61 @@
+{% load static %}
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'materialize/css/materialize.min.css' %}" media="screen,projection" />
+<link href="{% static 'css/css_template/bootstrap.min.css' %}" rel="stylesheet" />
+<link href="{% static 'css/css_template/fancybox/jquery.fancybox.css' %}" rel="stylesheet">
+<link href="{% static 'css/css_template/flexslider.css' %}" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/css_template/zoomslider.css' %}" />
+<link href="{% static 'css/css_template/style.css' %}" rel="stylesheet" />
+<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<a href="#" class="scrollup waves-effect waves-dark"><i class="fa fa-angle-up HillSide"></i></a>
+<header>
+        <div class="navbar navbar-default navbar-static-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="{% url 'propertyapp:showfeaturedpage' %}"><i class="icon-info-blocks material-icons">account_balance</i>Casa</a>
+                </div>
+                <div class="navbar-collapse collapse ">
+                    <ul class="nav navbar-nav">
+                        <li class="HillSide"><a class="waves-effect waves-dark" href="{% url 'propertyapp:showhomepage' %}">Home</a></li>
+						<li><a class="waves-effect waves-dark" href="{% url 'propertyapp:showfeaturedpage' %}">Featured</a></li>
+                        {% if request.session.logged_in %}
+                            <li><a class="waves-effect waves-dark" href="{% url 'userdashboardapp:userdashboard' %}">
+                                {% if request.session.is_seller %}
+                                    {{request.session.user_first_name}}|Seller
+                                {% else %}
+                                    {{request.session.user_first_name}}|Buyer
+                                {% endif %}
+                            </a></li>
+                        {% if request.session.is_seller %}
+                            <li><a class="waves-effect waves-dark" href="{% url 'propertyapp:propertyfeatured' %}">Post Property</a></li>
+                        {% endif %}
+                            <li><a class="waves-effect waves-dark" href="{% url 'logoutapp' %}">Logout</a></li>
+                        {% else %}
+                            <li><a class="waves-effect waves-dark" href="{% url 'registerapp:buyerorseller' %}">Register</a></li>
+                            <li><a class="waves-effect waves-dark" href="{% url 'loginapp:check_login' %}">Login</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+</header>
+<script src="{% static 'js/js_template/jquery.js' %}"></script>
+<script src="{% static 'js/js_template/js/jquery.easing.1.3.js' %}"></script>
+<script src="{% static 'materialize/js/materialize.min.js' %}"></script>
+<script src="{% static 'js/js_template/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/js_template/jquery.fancybox.pack.js' %}"></script>
+<script src="{% static 'js/js_template/jquery.fancybox-media.js' %}"></script>
+<script src="{% static 'js/js_template/jquery.flexslider.js' %}"></script>
+<script src="{% static 'js/js_template/animate.js' %}"></script>
+<!-- Vendor Scripts -->
+<script src="{% static 'js/js_template/modernizr.custom.js' %}"></script>
+<script src="{% static 'js/js_template/jquery.zoomslider.min.js' %}"></script>
+<script src="{% static 'js/js_template/jquery.isotope.min.js' %}"></script>
+<script src="{% static 'js/js_template/jquery.magnific-popup.min.js' %}"></script>
+<script src="{% static 'js/js_template/animate.js' %}"></script>
+<script src="{% static 'js/js_template/custom.js' %}"></script>

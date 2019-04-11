@@ -1,0 +1,42 @@
+{% include 'header_template.html' %}
+{% load crispy_forms_tags %}
+{% load widget_tweaks %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>HillSide Multi purpose HTML5 Web Template</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="" />
+<meta name="author" content="http://webthemez.com" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/registration_form.css' %}">
+</head>
+<body>
+<div id="wrapper">
+	<section id="inner-headline">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-12">
+				<h2 class="pageTitle">New User Registration</h2>
+			</div>
+		</div>
+	</div>
+	</section>
+    <form method="POST" style="width:100%">
+        {% csrf_token %}
+        <div style="width:50%;float:left;text-align:right;margin-top:3px">
+            <input type="submit" name="buyer_action" style="background-image:url({% static 'images/user_buyer.png' %});width:297px;height:41px" value="">
+        </div>
+        <div style="width:50%;float:left">
+            <input type="submit" name="seller_action" style="background-image:url({% static 'images/user_seller.png' %});width:313px;height:45px" value="">
+        </div>
+        <center>
+    <h4>
+        Join our elite team of property sellers or become our prestigious customer with 24x7 support</h4><br>
+    <img src="{% static 'images/register_new_user.jpg' %}" style="width:500px;max-height:50%;">
+    </center>
+    </form>
+</div>
+</body>
+</html>

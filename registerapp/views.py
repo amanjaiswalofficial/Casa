@@ -1,25 +1,34 @@
-from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views.generic.edit import FormView
 from .forms import NewUserForm
 
-class NewUserView(FormView):
+
+class NewUserRegistration(FormView):
 
     form_class = NewUserForm
-    template_name = 'registerapp/userfields_form_2.html'#right now using form_2
+    template_name = 'registerapp/registration_form.html'
 
-    #All set for now
     def form_valid(self, form):
+        form.instance.is_seller = self.request.session.get('is_user_seller')
         form.save()
-        #change to go somewhere else
         return redirect('propertyapp:showfeaturedpage')
 
     def form_invalid(self, form):
-        """if invalid return error and back to it"""
         return render(self.request, self.template_name, {'form': form, 'error': form.errors})
 
-    """in html, error is handled as
-    {% for items in error.values %}
-    {{items}}
-    {% endfor %}
-    """
+
+def buyerorseller(request):
+
+    if request.method == 'GET':
+        return render(request, 'registerapp/buyer_or_seller.html')
+
+    if request.method == 'POST':
+        if request.POST.get('buyer_action') == "":
+            request.session['is_user_seller'] = False
+        elif request.POST.get('seller_action') == "":
+            request.session['is_user_seller'] = True
+        return NewUserRegistration.as_view()(request)
+
+
+
+

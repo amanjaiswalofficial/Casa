@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+from registerapp.models import NewUser
+
 PROPERTY_CITY_CHOICES = (
         ('Kanpur', 'Kanpur'),
         ('New Delhi', 'New Delhi'),
@@ -40,10 +42,10 @@ class PropertyImages(models.Model):
 
 
 class Enquiry(models.Model):
-    enquiry_person_mail = models.EmailField(default='')
-    enquiry_property = models.ForeignKey(Property, on_delete=models.CASCADE, default='')
-    enquiry_description = models.TextField(max_length=200, blank=False)
-    enquiry_date = models.DateTimeField(auto_now_add=True, editable=False)
+    enquiry_user = models.ForeignKey(NewUser, on_delete=models.CASCADE, default='')
+    property = models.ForeignKey(Property, on_delete=models.CASCADE, default='')
+    description = models.TextField(max_length=200, blank=False)
+    date = models.DateTimeField(auto_now_add=True, editable=False)
 
     def __str__(self):
-        return self.enquiry_person_mail
+        return self.enquiry_user.email_field

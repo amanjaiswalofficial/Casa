@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views.generic import FormView
@@ -21,6 +22,7 @@ class LoginFormView(FormView):
             self.request.session['logged_in'] = True
             self.request.session['current_user'] = username
             self.request.session['is_seller'] = NewUser.objects.get(username=username).is_seller
+            self.request.session['user_first_name'] = User.objects.get(username=username).first_name
             return redirect('propertyapp:showfeaturedpage')
         else:
             messages.add_message(self.request, messages.INFO, "Invalid username/password")
