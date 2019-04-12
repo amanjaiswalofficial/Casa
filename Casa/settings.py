@@ -28,7 +28,8 @@ SECRET_KEY = 'ojwv%e#f**efh^q%a1wh_^@6el(6k2($ur=7@v(okpqkh2ow@^'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
+EMAIL_ADDRESS = 'amanjai03@gmail.com'
+PASSWORD = 'warmachin3'
 
 # Application definition
 

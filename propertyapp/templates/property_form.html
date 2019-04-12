@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+{% load widget_tweaks %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<form method="POST" enctype="multipart/form-data">
+{% csrf_token %}
+{{form.as_p}}
+{% for image in property_images %}
+    <input type="file" name="images">
+{% endfor %}
+    <br>
+    <br>
+    <input type="submit" value="Update">
+</form>
+</body>
+</html>

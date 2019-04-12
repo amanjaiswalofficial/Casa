@@ -7,6 +7,7 @@
 <body>
 {% ifequal request.session.current_user|slugify object.property_poster|slugify %}
 <form method="POST">
+    {% csrf_token %}
     Confirm To Delete {{object.property_title}} ??
     <input type="submit" value="Click To Confirm">
 </form>
