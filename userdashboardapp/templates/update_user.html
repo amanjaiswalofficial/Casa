@@ -1,0 +1,28 @@
+{% include 'header_template.html' %}
+{% load widget_tweaks %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Casa</title>
+</head>
+<body>
+
+<h4 style="margin-left:200px;margin-right:200px">
+    {% for field in form %}
+					{% if field.errors %}<li>{{ field.label }}: {{ field.errors|striptags }}</li>{% endif %}
+				{% endfor %}
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+First Name: {% render_field form.first_name value=current_user.first_name %}
+Last Name: {% render_field form.last_name value=current_user.last_name %}
+Phone Number: {% render_field form.phone_number value=current_user.phone_number %}
+Description: {% render_field form.description placeholder=current_user.description value=current_user.description%}
+Password: {% render_field form.password1 value=current_user.password1 %}
+Password Again: {% render_field form.password2 value=current_user.password2 %}
+        {% render_field form.is_seller %}
+{% render_field form.profile_image %}
+<input type="submit" value="Update User" name="update_profile">
+        </form>
+</h4>
+</body>
+</html>

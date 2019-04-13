@@ -1,3 +1,5 @@
+{% include 'header_template.html' %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,8 +10,9 @@
 {% ifequal request.session.current_user|slugify object.property_poster|slugify %}
 <form method="POST">
     {% csrf_token %}
-    Confirm To Delete {{object.property_title}} ??
-    <input type="submit" value="Click To Confirm">
+    <h4>Confirm To Delete Property: <br>{{object.property_title}} ??</h4>
+    <button type="submit"><img src="{% static 'images/confirm_button.jpg' %}" width="100px" height="100px"></button>
+
 </form>
 {% endifequal %}
 

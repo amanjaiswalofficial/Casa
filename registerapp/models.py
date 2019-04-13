@@ -16,7 +16,7 @@ class NewUser(User):
                                     unique=True,
                                     blank=False)
     phone_number=models.IntegerField(blank=False)
-    description = models.TextField()
+    description = models.CharField(max_length=200)
     profile_image = models.ImageField(upload_to='user_images/', default='register_app/blank_face.png')
     is_seller = models.BooleanField(default=False)
 

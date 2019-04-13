@@ -20,7 +20,7 @@
                             <td>{{property.0.property_description}}</td>
                             <td>{{property.0.property_price}}</td>
                             <td>
-                                <a href="{% url 'propertyapp:existingproperty' id=property.0.id %}" style="text-decoration:none"><input type="submit" value="Update"></a>
+                                <a href="{% url 'propertyapp:updateproperty' pk=property.0.id %}" style="text-decoration:none"><input type="submit" value="Update"></a>
                                 <a href="{% url 'propertyapp:deleteproperty' pk=property.0.id %}" style="text-decoration:none"><input type="submit" value="Delete"></a>
                             </td>
                         </tr>

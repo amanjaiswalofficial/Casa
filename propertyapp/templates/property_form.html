@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% include 'header_template.html' %}
 {% load widget_tweaks %}
 <html lang="en">
 <head>
@@ -6,9 +7,32 @@
     <title></title>
 </head>
 <body>
-<form method="POST" enctype="multipart/form-data">
+<form method="POST" enctype="multipart/form-data" style="margin-left:20%;margin-right:20%">
 {% csrf_token %}
-{{form.as_p}}
+    <h4>
+        {% for field in form %}
+					{% if field.errors %}<li>{{ field.label }}: {{ field.errors|striptags }}</li>{% endif %}
+				{% endfor %}
+        Name: {% render_field form.property_title %}
+    Address: {% render_field form.property_address %}
+        Select City: <select name="select_city" style="width:200px;float:left;position:absolute;margin-left:15px" class="btn btn-secondary dropdown-toggle">
+                {% for city in cities %}
+                    <option value="{{city}}">{{city}}</option>
+                {%endfor %}
+        </select><br><br><br>
+        Select State: <select name="select_state" style="width:200px;float:left;position:absolute;margin-left:4px" class="btn btn-secondary dropdown-toggle">
+            {% for state in states %}
+                    <option value="{{state}}">{{state}}</option>
+            {% endfor %}
+        </select><br><br>
+    PIN: {% render_field form.property_pin %}
+    Price: {% render_field form.property_price %}
+    No. of bedrooms: {% render_field form.property_bedroom %}
+    No. of bathrooms: {% render_field form.property_bathroom %}
+    Area: {% render_field form.property_sq_feet %}
+    Lot Size: {% render_field form.property_lot_size %}
+        Garage: {% render_field form.property_garage %}
+        Description: {% render_field form.property_description %}</h4>
 {% for image in property_images %}
     <input type="file" name="images">
 {% endfor %}
@@ -16,5 +40,6 @@
     <br>
     <input type="submit" value="Update">
 </form>
+    </center>
 </body>
 </html>

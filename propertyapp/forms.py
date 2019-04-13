@@ -1,3 +1,5 @@
+import re
+
 from django import forms
 from django.forms import ModelForm
 from django.forms import ModelForm
@@ -15,7 +17,6 @@ class PropertyImagesForm(ModelForm):
 class NewPropertyForm(ModelForm):
 
 
-
     class Meta:
         model = Property
         fields = [
@@ -30,3 +31,12 @@ class NewPropertyForm(ModelForm):
             'property_garage',
             'property_description',
         ]
+
+    def clean(self):
+        cd = self.cleaned_data
+
+        patter_number = re.compile("^[\d]{6}$")
+
+        if not re.match(patter_number, str(cd.get("property_pin"))):
+            self.add_error('property_pin', "The pin code must be a 6 digit number")
+

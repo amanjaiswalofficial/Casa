@@ -55,6 +55,7 @@
                 <option value="New Delhi">New Delhi</option>
                 <option value="Ghaziabad">Ghaziabad</option>
                 <option value="Chandigarh">Chandigarh</option>
+                <option value="All Cities">All Cities</option>
             </select>
              <select name="select_state" style="width:200px;float:left;margin-left:15px;margin-top:10px" class="btn btn-secondary dropdown-toggle">
                 <option selected="selected" disabled>Select State</option>
@@ -62,6 +63,7 @@
                 <option value="Delhi">Delhi</option>
                 <option value="Karnataka">Karnataka</option>
                 <option value="Punjab">Punjab</option>
+                <option value="All States">All States</option>
             </select>
             <input class="btn btn-secondary dropdown-toggle" type="submit" value="Search Property" style="margin-left:10px;margin-top:10px; width:20%">
         </form>
@@ -89,7 +91,7 @@
                                 <span class="price">{{item.0.property_price}}</span>
 								<h4>{{item.0.property_title}}</h4>
 								<h5>{{item.0.property_city}}</h5>
-								<a href="{%url 'propertyapp:existingproperty' id=item.0.id %}" class="btn btn-details">BUY</a>
+								<a href="{%url 'propertyapp:existingproperty' id=item.0.id %}" class="btn btn-details">BUY/RENT</a>
                             </p>
                         </div>
                     </div>

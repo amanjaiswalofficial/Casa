@@ -1,11 +1,9 @@
-import re
-
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views import View
 from django.views.generic import DeleteView, UpdateView
 from registerapp.models import NewUser
@@ -56,7 +54,7 @@ def show_property_for_seller(request, context, current_user, property_poster):
     """displays property to seller and opens the property in update mode if seller posted the property"""
 
     if current_user == str(property_poster):
-        return render(request, 'property_update.html', context=context)
+        return redirect('propertyapp:updateproperty', pk=context['property'].id)
     else:
         return render(request, 'property_details.html', context=context)
 
@@ -75,6 +73,12 @@ def handle_query(request,current_property, current_user, id):
     #     server.ehlo()
     #     server.starttls()
     #     server.login(EMAIL_ADDRESS, PASSWORD)
+    new_enquiry.description = "You have a query for one of your properties,following are the details:\n" \
+                              "Buyer's email:{}\n" \
+                              "Buyer's phone:{}\n"\
+                              "Query:{}".format(new_enquiry.enquiry_user.email_field,
+                                                new_enquiry.enquiry_user.phone_number,
+                                                new_enquiry.description)
     #     message = 'Subject: {}\n\n{}'.format(new_enquiry.property.property_title, new_enquiry.description)
     #     server.sendmail(EMAIL_ADDRESS, property_seller_email, message)
     #     server.quit()
@@ -129,104 +133,105 @@ class ExistingProperty(View):
         :param id: to know which property is tried to be accessed
         :return: either the HTML page containing the property, or redirect to a method based on user logged in
         """
+        try:
+            property = Property.objects.get(pk=id)
+            property_images = PropertyImages.objects.filter(property_name_id=property.id)
+            no_of_images = len(property_images)
+            current_user = request.session.get('current_user')
+            property_poster = property.property_poster
+            context = {'property': property, 'property_images': property_images, 'no_of_images': range(no_of_images)}
+            if check_session(request,'logged_in'):
+                context['logged_in'] = True
+                is_buyer = not check_session(request, 'is_seller')
+                if is_buyer:
+                    return show_property_for_buyer(request, context, current_user, property)
+                else:
+                    return show_property_for_seller(request, context, current_user, property_poster)
+                # return render(request, 'property_details.html', context=context)
 
-        property = Property.objects.get(pk=id)
-        property_images = PropertyImages.objects.filter(property_name_id=property.id)
-        no_of_images = len(property_images)
-        current_user = request.session.get('current_user')
-        property_poster = property.property_poster
-        context = {'property': property, 'property_images': property_images, 'no_of_images': range(no_of_images)}
-        if check_session(request,'logged_in'):
-            context['logged_in'] = True
-            is_buyer = not check_session(request, 'is_seller')
-            if is_buyer:
-                return show_property_for_buyer(request, context, current_user, property)
-            else:
-                return show_property_for_seller(request, context, current_user, property_poster)
-            # return render(request, 'property_details.html', context=context)
-
-        return render(request, 'property_details.html', context=context)
+            return render(request, 'property_details.html', context=context)
+        except Property.DoesNotExist:
+            return render(request,'property_not_found.html')
 
     def post(self, request, id):
         """
-
+        Method to call handle_query method with necessary parameters to save
         :param request: request variable used
         :param id: to know which property is being updated
-        :return: success message if updation is successful
+        :return: response to handle_query method
         """
-        current_property = Property.objects.get(pk=id)
-        current_user_value = User.objects.get(username=request.session.get('current_user'))
-        current_user = NewUser.objects.get(user=current_user_value)
-        if self.request.POST.get('update_property'):
-
-            images_uploaded = self.request.FILES.getlist('property_images')
-            form_data = NewPropertyForm(self.request.POST)
-            if form_data.is_valid():
-
-                property_form = form_data.save(commit=False)
-                property_form.property_poster_id = self.request.user.id
-
-                for field in string_fields:
-                    setattr(current_property, field, self.request.POST.get(field))
-                for field in int_fields:
-                    setattr(current_property, field, int(self.request.POST.get(field)))
-                #current_property.save()
-
-                PropertyImages.objects.filter(property_name_id=current_property.id).delete()
-                total_uploads = 5 if len(images_uploaded) > 5 else len(images_uploaded)
-                for i in range(total_uploads):
-                    PropertyImages.objects.create(property_image=images_uploaded[i], property_name_id=current_property.id)
-                return HttpResponse('property created successfully')
-
-            else:
-
-                return HttpResponse(form_data.errors)
-
-        elif request.POST.get('submit_query'):
-
-            return handle_query(request, current_property, current_user,id)
+        if request.POST.get('submit_query'):
+            current_property = Property.objects.get(pk=id)
+            current_user_value = User.objects.get(username=request.session.get('current_user'))
+            current_user = NewUser.objects.get(user=current_user_value)
+            return handle_query(request, current_property, current_user, id)
 
 
 class UpdateProperty(UpdateView):
 
     model = Property
+    form_class = NewPropertyForm
     template_name = 'property_form.html'
-    fields = ['property_title',
-              'property_address',
-              'property_pin',
-              'property_price',
-              'property_bedroom',
-              'property_bathroom',
-              'property_sq_feet',
-              'property_lot_size',
-              'property_garage',
-              'property_description',]
 
-    def get_context_data(self,*args, **kwargs):
-        current_property = Property.objects.get(pk=self.get_object().id)
+    def get(self, request, *args, **kwargs):
+        """
+        Method to handle and decide whether allowing the logged in user to update the property or not
+        :return: Either the form containing values to update the properties or login page to login as seller
+        """
+
         if self.request.session.get('logged_in', False):
+
+            current_property = Property.objects.get(pk=self.get_object().id)
             current_user = User.objects.get(username=self.request.session.get('current_user'))
             if current_property.property_poster == current_user:
-                context = super(UpdateProperty, self).get_context_data(**kwargs)
-                context['property_images'] = PropertyImages.objects.filter(property_name=current_property)# whatever you would like
-                return context
+                return super().get(request, *args, **kwargs)
             else:
-                print('here')
+                logout(self.request)
                 messages.add_message(self.request, messages.INFO, "Please login as seller to post a property")
-                redirect('loginapp:check_login')
+                return redirect('loginapp:check_login')
         else:
-            messages.add_message(self.request, messages.INFO, "Not Logged In, Please login as seller to post a property")
-        redirect('loginapp:check_login')
+            messages.add_message(self.request, messages.INFO,
+                                 "Not Logged In, Please login as seller to update a property")
+            return redirect('loginapp:check_login')
+
+    def get_context_data(self,*args, **kwargs):
+        """
+        Initialize the data to be sent to the HTML page
+        :return: context to be used by the Django Template
+        """
+        current_property = Property.objects.get(pk=self.get_object().id)
+        context = super(UpdateProperty, self).get_context_data(**kwargs)
+        context['cities'] = ['Kanpur','New Delhi','Ghaziabad','Chandigarh']
+        context['states'] = ['Uttar Pradesh', 'Delhi', 'Karnataka', 'Punjab']
+        context['property_images'] = PropertyImages.objects.filter(property_name=current_property)
+        return context
 
     def form_valid(self, form):
-        form.save()
+        """
+        If the form data is valid, update the property
+        :param form: from the template
+        :return: on successful updation redirects to dashboard
+        """
+        form.instance.property_city = form.data['select_city']
+        form.instance.property_state = form.data['select_state']
+        form.instance.save()
+        current_property =Property.objects.get(pk=self.get_object().id)
         if self.request.FILES:
             images = self.request.FILES.getlist('images')
             for image in images:
-                current_image = PropertyImages.objects.filter(property_name=Property.objects.get(pk=self.get_object().id))[images.index(image)]
+                current_image = PropertyImages.objects.filter(property_name=current_property)[images.index(image)]
                 current_image.property_image = image
                 current_image.save()
         return redirect('userdashboardapp:userdashboard')
+
+    def form_invalid(self, form, *args, **kwargs):
+        """
+
+        :param form:
+        :return: an HttpResponse to a page listing the error
+        """
+        context = self.get_context_data()
+        return render(self.request, self.template_name, context=context)
 
 
 class DeleteProperty(DeleteView, LoginRequiredMixin):
@@ -236,21 +241,47 @@ class DeleteProperty(DeleteView, LoginRequiredMixin):
     template_name = 'property_confirm_delete.html'
     success_url = reverse_lazy('userdashboardapp:userdashboard')
 
+    def get(self, request, *args, **kwargs):
+        """
+        Method to handle and decide whether allowing the logged in user to delete the property or not
+        :return: Either the form containing values to update the properties or login page to login as seller
+        """
+        if self.request.session.get('logged_in', False):
+
+            current_property = Property.objects.get(pk=self.get_object().id)
+            current_user = User.objects.get(username=self.request.session.get('current_user'))
+            if current_property.property_poster == current_user:
+                return super().get(request, *args, **kwargs)
+            else:
+                logout(self.request)
+                messages.add_message(self.request, messages.INFO, "Please login as appropriate seller to post a property")
+                return redirect('loginapp:check_login')
+        else:
+            messages.add_message(self.request, messages.INFO,
+                                 "Not Logged In, Please login as seller to update a property")
+            return redirect('loginapp:check_login')
+
 
 def search_property(request):
     """
     :param request: request variable used
     :return: the result set containing all the properties depending on the filter to a method to display them
     """
-
-    #print(request.POST.get('search_text'))
-    city_search_results = Property.objects.filter(property_city=request.POST.get('select_city', ""))
-    state_search_results = Property.objects.filter(property_states=request.POST.get('select_state', ""))
+    invalid_entries = [' ', '', ""]
+    if request.POST.get('select_city') is None or 'All Cities':
+        city_search_results = Property.objects.all()
+    else:
+        city_search_results = Property.objects.filter(property_city=request.POST.get('select_city', ""))
+    if request.POST.get('select_state') is None or 'All States':
+        state_search_results = Property.objects.all()
+    else:
+        state_search_results = Property.objects.filter(property_states=request.POST.get('select_state', ""))
     query_result = city_search_results
     query_result = query_result.union(state_search_results)
-    if request.POST.get('search_text') is not "":
-        text_search_results = Property.objects.filter(property_title__icontains=request.POST.get('search_text'))
-        query_result = query_result.union(text_search_results)
+    print(query_result)
+    if request.POST.get('search_text') not in invalid_entries:
+        text_search_results = Property.objects.filter(property_title__icontains=request.POST.get('search_text')).filter(property_description__icontains=request.POST.get('search_text'))
+        query_result = query_result.intersection(text_search_results)
     return show_property(request, query_result)
 
 
