@@ -7,21 +7,34 @@
             <div class="col-md-4 md-margin-bottom-40">
 					<div class="card small">
                         <div class="card-image">
-                             <img class="img-responsive" src="{{item.1.property_image.url}}" style="max-width:100%;height:200px">
-                        </div>
+                             <div>
+                                <img class="img-responsive" src="{{item.1.property_image.url}}" style="max-width:100%;height:200px">
+                                <div class="top-left" style="position: absolute;top: 8px;left: 16px">
+                                    {% if item.0.id|divisibleby:2%}
+                                        <div class="btn btn-details" style="width:80px;height:35px">BUY</div>
+                                    {% else %}
+                                        <div class="btn btn-details" style="width:80px;height:35px">RENT</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            </div>
                         <div class="card-content">
                             <p>
                                 <span class="price">{{item.0.property_price}}</span>
 								<h4>{{item.0.property_title}}</h4>
 								<h5>{{item.0.property_city}}</h5>
-								<a href="{%url 'propertyapp:existingproperty' id=item.0.id %}" class="btn btn-details">BUY/RENT</a>
+								{% ifequal item.0.property_poster request.user %}
+                                        <a href="{%url 'propertyapp:existingproperty' id=item.0.id %}" class="btn btn-details">UPDATE</a>
+                                    {% else %}
+                                      <a href="{%url 'propertyapp:existingproperty' id=item.0.id %}" class="btn btn-details">DETAILS</a>
+                                    {% endifequal %}
                             </p>
+                            </div>
                         </div>
                     </div>
-            </div>
             {% endfor %}
-        </div>
-		</div>
+            </div>
+</div>
 
 <div style="width:100%">
   <center>

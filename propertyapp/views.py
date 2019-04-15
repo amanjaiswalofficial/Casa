@@ -1,11 +1,14 @@
+import re
+
 from django.contrib.auth import logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.http import HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, render_to_response
+from django.template import RequestContext
 from django.urls import reverse_lazy, reverse
 from django.views import View
-from django.views.generic import DeleteView, UpdateView
+from django.views.generic import DeleteView, UpdateView, CreateView
 from registerapp.models import NewUser
 from .forms import NewPropertyForm, PropertyImagesForm
 from .models import PropertyImages, Property, Enquiry
@@ -67,24 +70,24 @@ def handle_query(request,current_property, current_user, id):
     new_enquiry.property = current_property
     new_enquiry.description = request.POST['query_area']
     property_seller_email = NewUser.objects.get(user=new_enquiry.property.property_poster).email_field
-    #new_enquiry.save()
-    # try:
-    #     server = smtplib.SMTP('smtp.gmail.com:587')
-    #     server.ehlo()
-    #     server.starttls()
-    #     server.login(EMAIL_ADDRESS, PASSWORD)
-    new_enquiry.description = "You have a query for one of your properties,following are the details:\n" \
+    new_enquiry.save()
+    try:
+        server = smtplib.SMTP('smtp.gmail.com:587')
+        server.ehlo()
+        server.starttls()
+        server.login(EMAIL_ADDRESS, PASSWORD)
+        new_enquiry.description = "You have a query for one of your properties,following are the details:\n" \
                               "Buyer's email:{}\n" \
                               "Buyer's phone:{}\n"\
                               "Query:{}".format(new_enquiry.enquiry_user.email_field,
                                                 new_enquiry.enquiry_user.phone_number,
                                                 new_enquiry.description)
-    #     message = 'Subject: {}\n\n{}'.format(new_enquiry.property.property_title, new_enquiry.description)
-    #     server.sendmail(EMAIL_ADDRESS, property_seller_email, message)
-    #     server.quit()
-    #     print("Success: Email sent!")
-    # except:
-    #     return HttpResponse("Email failed to send.")
+        message = 'Subject: {}\n\n{}'.format(new_enquiry.property.property_title, new_enquiry.description)
+        server.sendmail(EMAIL_ADDRESS, 'amanjai01@gmail.com', message)
+        server.quit()
+        print("Success: Email sent!")
+    except:
+        return HttpResponse("Email failed to send.")
 
     return redirect('propertyapp:existingproperty', id=id)
 
@@ -108,8 +111,16 @@ class CreateNewProperty(View):
     def post(self,request):
         """accepts the data from the seller and saves into the model if valid else return error"""
 
-        images_uploaded = self.request.FILES.getlist('Property_Images')
         form_data = NewPropertyForm(self.request.POST)
+        form_images = PropertyImagesForm(self.request.FILES)
+        images_uploaded = self.request.FILES.getlist('Property_Images')
+        for images in images_uploaded:
+            if re.match('^[\d\w.\-]*(.jpg|.png)$',str(images)) is None:
+                return render(request, 'property_register.html', {'property_form': form_data,
+                                                                  'property_image': form_images,
+                                                                  'errors': True, 'image_error':\
+                                                                      'Please ensure you have uploaded image and nothing else'})
+
         if form_data.is_valid():
             property_form = form_data.save(commit=False)
             property_form.property_poster_id = self.request.user.id
@@ -121,7 +132,9 @@ class CreateNewProperty(View):
                 PropertyImages.objects.create(property_image=images_uploaded[i], property_name_id=property_form.id)
             return redirect('propertyapp:showfeaturedpage')
         else:
-            return HttpResponse(form_data.errors)
+            return render(request, 'property_register.html', {'property_form': form_data,
+                                                              'property_image': form_images,
+                                                              'errors': True})
 
 
 class ExistingProperty(View):
@@ -187,11 +200,11 @@ class UpdateProperty(UpdateView):
                 return super().get(request, *args, **kwargs)
             else:
                 logout(self.request)
-                messages.add_message(self.request, messages.INFO, "Please login as seller to post a property")
+                messages.add_message(self.request, messages.INFO, "Please login as seller to update/delete a property")
                 return redirect('loginapp:check_login')
         else:
             messages.add_message(self.request, messages.INFO,
-                                 "Not Logged In, Please login as seller to update a property")
+                                 "Not Logged In, Please login as seller to update/delete a property")
             return redirect('loginapp:check_login')
 
     def get_context_data(self,*args, **kwargs):
@@ -218,6 +231,11 @@ class UpdateProperty(UpdateView):
         current_property =Property.objects.get(pk=self.get_object().id)
         if self.request.FILES:
             images = self.request.FILES.getlist('images')
+            for image in images:
+                if re.match('^[\d\w.\-]*(.jpg|.png)$', str(image)) is None:
+                    context = self.get_context_data()
+                    context['image_error'] = 'Please ensure you have uploaded image and nothing else'
+                    return render(self.request, self.template_name, context=context)
             for image in images:
                 current_image = PropertyImages.objects.filter(property_name=current_property)[images.index(image)]
                 current_image.property_image = image
@@ -254,11 +272,11 @@ class DeleteProperty(DeleteView, LoginRequiredMixin):
                 return super().get(request, *args, **kwargs)
             else:
                 logout(self.request)
-                messages.add_message(self.request, messages.INFO, "Please login as appropriate seller to post a property")
+                messages.add_message(self.request, messages.INFO, "Please login as appropriate seller to update/delete a property")
                 return redirect('loginapp:check_login')
         else:
             messages.add_message(self.request, messages.INFO,
-                                 "Not Logged In, Please login as seller to update a property")
+                                 "Not Logged In, Please login as seller to update/delete a property")
             return redirect('loginapp:check_login')
 
 
@@ -278,10 +296,16 @@ def search_property(request):
         state_search_results = Property.objects.filter(property_states=request.POST.get('select_state', ""))
     query_result = city_search_results
     query_result = query_result.union(state_search_results)
-    print(query_result)
     if request.POST.get('search_text') not in invalid_entries:
-        text_search_results = Property.objects.filter(property_title__icontains=request.POST.get('search_text')).filter(property_description__icontains=request.POST.get('search_text'))
+        text_search_results = Property.objects.filter(property_title__icontains=request.POST.get('search_text'))
         query_result = query_result.intersection(text_search_results)
+    # print(text_search_results)
+    # print(query_result)
+    # print(text_search_results.intersection(query_result))
+    # print(query_result.intersection(text_search_results))
+    # property_results = set()
+    # property_results = property_results.intersection(query_result, text_search_results)
+    # print(property_results)
     return show_property(request, query_result)
 
 

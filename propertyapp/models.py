@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-
 from registerapp.models import NewUser
 
 PROPERTY_CITY_CHOICES = (

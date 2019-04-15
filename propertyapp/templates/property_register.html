@@ -6,11 +6,18 @@
 
 <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-
+    {% if errors %}
+    ERRORS:
+    {% if image_error %}
+        <h5 style="margin-left:10px"><li>Image Error: {{image_error}}</li></h5>
+    {% endif %}
+    {% for field in property_form %}
+    <h5 style="margin-left:10px">{% if field.errors %}<li>{{ field.label }}: {{ field.errors|striptags }}</li>{% endif %}</h5>
+				{% endfor %}
+    {% endif %}
     Title:{% render_field property_form.property_title %}<br>
     City:<br>  <select name="select_city" style="width:200px;height:30px;float:left;margin-left:2px;margin-top:10px" class="btn btn-secondary dropdown-toggle">
-                <option selected="selected" disabled>Select City</option>
-                <option value="Kanpur">Kanpur</option>
+                <option selected="selected" value="Kanpur">Kanpur</option>
                 <option value="New Delhi">New Delhi</option>
                 <option value="Ghaziabad">Ghaziabad</option>
                 <option value="Chandigarh">Chandigarh</option>
@@ -18,8 +25,7 @@
     <br><br>
     State:
     <br><select name="select_state" style="width:200px;height:30px;float:left;margin-left:2px;margin-top:10px" class="btn btn-secondary dropdown-toggle">
-                <option selected="selected" disabled>Select State</option>
-                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                <option selected="selected" value="Uttar Pradesh">Uttar Pradesh</option>
                 <option value="Delhi">Delhi</option>
                 <option value="Karnataka">Karnataka</option>
                 <option value="Punjab">Punjab</option>

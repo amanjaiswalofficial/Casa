@@ -10,6 +10,9 @@
 <form method="POST" enctype="multipart/form-data" style="margin-left:20%;margin-right:20%">
 {% csrf_token %}
     <h4>
+        {% if image_error %}
+            {{image_error}}<br>
+        {% endif %}
         {% for field in form %}
 					{% if field.errors %}<li>{{ field.label }}: {{ field.errors|striptags }}</li>{% endif %}
 				{% endfor %}

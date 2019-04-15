@@ -29,7 +29,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 EMAIL_ADDRESS = 'amanjai03@gmail.com'
-PASSWORD = 'warmachin3'
+PASSWORD = "warmachin3"
 
 # Application definition
 
