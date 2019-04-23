@@ -1,14 +1,12 @@
-import re
-
 from django.contrib.auth import logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import redirect, render, render_to_response
 from django.template import RequestContext
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import DeleteView, UpdateView, CreateView
+from django.views.generic import DeleteView, UpdateView
 from registerapp.models import NewUser
 from .forms import NewPropertyForm, PropertyImagesForm
 from .models import PropertyImages, Property, Enquiry
@@ -16,7 +14,7 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from Casa.settings import EMAIL_ADDRESS, PASSWORD
 import smtplib
-
+import re
 
 string_fields = ['property_title',
                  'property_address',
@@ -71,23 +69,23 @@ def handle_query(request,current_property, current_user, id):
     new_enquiry.description = request.POST['query_area']
     property_seller_email = NewUser.objects.get(user=new_enquiry.property.property_poster).email_field
     new_enquiry.save()
-    try:
-        server = smtplib.SMTP('smtp.gmail.com:587')
-        server.ehlo()
-        server.starttls()
-        server.login(EMAIL_ADDRESS, PASSWORD)
-        new_enquiry.description = "You have a query for one of your properties,following are the details:\n" \
-                              "Buyer's email:{}\n" \
-                              "Buyer's phone:{}\n"\
-                              "Query:{}".format(new_enquiry.enquiry_user.email_field,
-                                                new_enquiry.enquiry_user.phone_number,
-                                                new_enquiry.description)
-        message = 'Subject: {}\n\n{}'.format(new_enquiry.property.property_title, new_enquiry.description)
-        server.sendmail(EMAIL_ADDRESS, 'amanjai01@gmail.com', message)
-        server.quit()
-        print("Success: Email sent!")
-    except:
-        return HttpResponse("Email failed to send.")
+    # try:
+    #     server = smtplib.SMTP('smtp.gmail.com:587')
+    #     server.ehlo()
+    #     server.starttls()
+    #     server.login(EMAIL_ADDRESS, PASSWORD)
+    #     new_enquiry.description = "You have a query for one of your properties,following are the details:\n" \
+    #                               "Buyer's email: {}\n"\
+    #                               "Buyer's phone: {}\n"\
+    #                               "Query: {}".format(new_enquiry.enquiry_user.email_field,
+    #                                                  new_enquiry.enquiry_user.phone_number,
+    #                                                  new_enquiry.description)
+    #     message = 'Subject: {}\n\n{}'.format(new_enquiry.property.property_title, new_enquiry.description.encode('utf-8'))
+    #     server.sendmail(EMAIL_ADDRESS, 'amanjai01@gmail.com', message)
+    #     server.quit()
+    #     print("Success: Email sent!")
+    # except:
+    #     return HttpResponse("Email failed to send.")
 
     return redirect('propertyapp:existingproperty', id=id)
 
@@ -115,11 +113,12 @@ class CreateNewProperty(View):
         form_images = PropertyImagesForm(self.request.FILES)
         images_uploaded = self.request.FILES.getlist('Property_Images')
         for images in images_uploaded:
-            if re.match('^[\d\w.\-]*(.jpg|.png)$',str(images)) is None:
+            if re.match('^[\d\w.\-]*(.jpg|.png)$', str(images)) is None:
                 return render(request, 'property_register.html', {'property_form': form_data,
                                                                   'property_image': form_images,
                                                                   'errors': True, 'image_error':\
-                                                                      'Please ensure you have uploaded image and nothing else'})
+                                                                  'Please ensure you have uploaded\
+                                                                   image and nothing else'})
 
         if form_data.is_valid():
             property_form = form_data.save(commit=False)
@@ -272,7 +271,8 @@ class DeleteProperty(DeleteView, LoginRequiredMixin):
                 return super().get(request, *args, **kwargs)
             else:
                 logout(self.request)
-                messages.add_message(self.request, messages.INFO, "Please login as appropriate seller to update/delete a property")
+                messages.add_message(self.request, messages.INFO, "Please login as appropriate seller to \
+                                                                    update/delete a property")
                 return redirect('loginapp:check_login')
         else:
             messages.add_message(self.request, messages.INFO,
@@ -299,13 +299,6 @@ def search_property(request):
     if request.POST.get('search_text') not in invalid_entries:
         text_search_results = Property.objects.filter(property_title__icontains=request.POST.get('search_text'))
         query_result = query_result.intersection(text_search_results)
-    # print(text_search_results)
-    # print(query_result)
-    # print(text_search_results.intersection(query_result))
-    # print(query_result.intersection(text_search_results))
-    # property_results = set()
-    # property_results = property_results.intersection(query_result, text_search_results)
-    # print(property_results)
     return show_property(request, query_result)
 
 
@@ -315,28 +308,28 @@ def show_featured_page(request):
     :param request:
     :return: top 3 properties to display on the featured page
     """
-
-    p =[]
-    p_images = []
-    count = len(Property.objects.filter())
-    indexes = [i for i in range(count,count-3,-1)]
-    current_user=request.session.get('current_user', None)
-    user_name=''
-    if current_user is not None:
-        user_name = User.objects.get(username = current_user).first_name
-    for i in indexes:
-        p.append(Property.objects.get(pk=i))
-        image = PropertyImages.objects.filter(property_name_id=p[len(p)-1].id)[0]
-        p_images.append(image)
-    final_p = zip(p, p_images)
-    return render(request, 'property_featured.html', {'property': p,
-                                                      'property_images': p_images,
-                                                      'range': range(1, 4),
-                                                      'final_property': final_p,
-                                                      'logged_in': request.session.get('logged_in', None),
-                                                      'user_first_name':user_name,
-                                                      'is_seller':request.session.get('is_seller', False)
-                                                     })
+    if request.method == 'GET':
+        p_images = []
+        count = len(Property.objects.filter())
+        indexes = [i for i in range(count,count-3,-1)]
+        current_user=request.session.get('current_user', None)
+        user_name=''
+        if current_user is not None:
+            user_name = User.objects.get(username=current_user).first_name
+        p = list(Property.objects.all().order_by('-id')[:3])
+        for property in p:
+            p_images.append(PropertyImages.objects.filter(property_name_id=property.id)[0])
+        final_p = zip(p, p_images)
+        return render(request, 'property_featured.html', {'property': p,
+                                                          'property_images': p_images,
+                                                          'range': range(1, 4),
+                                                          'final_property': final_p,
+                                                          'logged_in': request.session.get('logged_in', None),
+                                                          'user_first_name': user_name,
+                                                          'is_seller': request.session.get('is_seller', False)
+                                                         })
+    elif request.method == 'POST':
+        return search_property(request)
 
 
 def show_home_page(request):
@@ -367,3 +360,9 @@ def show_property(request, property_set):
     paginator = Paginator(display_properties, 6)
     final_properties = paginator.get_page(page)
     return render(request, 'property_home.html', {'properties': final_properties})
+
+
+def handle_error(request, *args, **argv):
+    response = render_to_response('property_not_found.html')
+    response.status_code = 404
+    return response

@@ -27,15 +27,21 @@
                             <li><a class="waves-effect waves-dark" href="{% url 'userdashboardapp:userdashboard' %}">
                                 dashboard
                             </a></li>
+                        {% if not request.session.is_seller %}
+                        <li><a class="waves-effect waves-dark" href="{% url 'userdashboardapp:userqueryresponse' %}">
+                                responses
+                            </a></li>
+
+                        {% endif %}
                         {% if request.session.is_seller %}
                             <li><a class="waves-effect waves-dark" href="{% url 'propertyapp:propertyfeatured' %}">Post Property</a></li>
                         {% endif %}
                             <li><a class="waves-effect waves-dark" href="{% url 'logoutapp' %}">Logout</a></li>
-                            <li><a class="waves-effect waves-dark" style="pointer-events: none;cursor: default;">
+                            <li><a class="waves-effect waves-dark" style="pointer-events: none;cursor: default;color:aqua">
                                 {% if request.session.is_seller %}
-                                    {{request.session.user_first_name}}(Seller)
+                                    {{request.session.user_first_name}}/Seller
                                 {% else %}
-                                    {{request.session.user_first_name}}(Buyer)
+                                    {{request.session.user_first_name}}/Buyer
                                 {% endif %}
                             </a></li>
                         {% else %}

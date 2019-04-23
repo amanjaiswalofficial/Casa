@@ -1,21 +1,26 @@
+import smtplib
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect, get_list_or_404
-from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import UpdateView
-from registerapp.forms import NewUserForm
+from Casa.settings import EMAIL_ADDRESS, PASSWORD
+from propertyapp.views import handle_error
 from registerapp.models import NewUser
 from propertyapp.models import Enquiry, Property, PropertyImages
 from django.contrib import messages
+from userdashboardapp.models import QueryResponses
 from .forms import NewUserUpdateForm
 
 
 class UserDashboardApp(View):
+    """Contains methods to show dashboard to the user, differentiates according to the type of user logged in"""
 
     def get(self,request):
+        """calls the method show_user to check which user has logged in"""
         return self.show_user()
 
     def show_user(self):
+        """If buyer has logged in, calls method for buyer dashboard, else calls for seller's dashboard"""
         username = self.request.session.get('current_user')
         is_seller = self.request.session.get('is_seller', False)
         try:
@@ -30,6 +35,12 @@ class UserDashboardApp(View):
             return redirect('loginapp:check_login')
 
     def show_seller(self, current_user, context):
+        """
+        Displays the seller's dashboard
+        :param current_user: to know which user has logged in
+        :param context: containing information about current session
+        :return: django template for the seller's dashboard
+        """
         queries_for_seller=[]
         try:
             posted_properties_images = []
@@ -53,7 +64,13 @@ class UserDashboardApp(View):
             return render(self.request, 'dashboard_seller.html', context=context)
 
     def show_buyer(self, current_user, context):
-        queries_made=[]
+        """
+        Display the dashboard for the buyer
+        :param current_user: to know which user has logged in
+        :param context: extra information about the user
+        :return: template for the buyer's dashboard
+        """
+        queries_made = []
         try:
             queries_made = get_list_or_404(Enquiry, enquiry_user=current_user)
         except Http404:
@@ -63,61 +80,119 @@ class UserDashboardApp(View):
             return render(self.request, 'dashboard_buyer.html', context=context)
 
     def post(self, request):
+        """
+        Handles various button clicks over the dashboard like updating profile and sending query replies for seller
+        :return: control to the method containing logic depending on user interaction
+        """
         username = self.request.session.get('current_user')
         current_user = NewUser.objects.get(username=username)
         if request.POST.get('update_profile_button'):
             return UpdateUser.as_view()(request, pk=current_user.id)
         elif request.POST.get('update_profile'):
-            # current_user.first_name = request.POST.get('first_name')
-            # current_user.last_name = request.POST.get('last_name')
-            # current_user.description = request.POST.get('description')
-            # if request.FILES.get('profile_image'):
-            #     current_user.profile_image = request.FILES.get('profile_image')
-            # current_user.save()
-            # return HttpResponse('User profile saved successfully')
             return UpdateUser.as_view()(request, pk=current_user.id)
-
-class UpdateUser(UpdateView):
-        model = NewUser
-        form_class = NewUserUpdateForm
-        template_name = 'update_user.html'
-
-        def get(self, request, *args, **kwargs):
-            """
-            Method to handle and decide whether allowing the logged in user to update the property or not
-            :return: Either the form containing values to update the properties or login page to login as seller
-            """
-
-            if self.request.session.get('logged_in', False):
-                    print(self.current_user.is_seller)
-                    return super().get(request, *args, **kwargs)
-            else:
-                    messages.add_message(self.request, messages.INFO, "Please login as seller to post a property")
-                    return redirect('loginapp:check_login')
-
-        def get_context_data(self, **kwargs):
-            context = super(UpdateUser, self).get_context_data(**kwargs)
-            username = self.request.session.get('current_user')
-            current_user = NewUser.objects.get(username=username)
-            #print(current_user.description)
-            context['current_user'] = current_user
-            return context
-
-        def form_valid(self, form):
-            context = self.get_context_data()
-            form.instance.is_seller = context['current_user'].is_seller
-            form.instance.save()
+        elif request.POST.get('submit_response'):
+            query_response = QueryResponses()
+            enquiry_user = request.POST.get('enquiry_user')
+            enquiry_property = request.POST.get('enquiry_property')
+            current_enquiry = Enquiry.objects.filter(enquiry_user__email_field=enquiry_user, property__property_title=enquiry_property)[0]
+            query_response.enquiry_made = current_enquiry
+            query_response.response = request.POST.get('response_area')
+            query_response.save()
+            seller_email = NewUser.objects.get(user=request.user).email_field
+            buyer_email = current_enquiry.enquiry_user.email_field
+            print(buyer_email)
+            # try:
+            #     server = smtplib.SMTP('smtp.gmail.com:587')
+            #     server.ehlo()
+            #     server.starttls()
+            #     server.login(EMAIL_ADDRESS, PASSWORD)
+            #     description = "You have a response to one of your queries,following are the details:\n" \
+            #                   "Property: {}\n" \
+            #                   "Property Seller's Email: {}\n" \
+            #                   "Response: {}".format(enquiry_property,
+            #                                         seller_email,
+            #                                         query_response.response)
+            #     message = 'Subject: {}\n\n{}'.format(enquiry_property, description)
+            #     server.sendmail(EMAIL_ADDRESS, 'amanjai01@gmail.com', message)
+            #     server.quit()
+            #     print("Success: Email sent!")
+            # except:
+            #     return HttpResponse("Email failed to send.")
             return redirect('userdashboardapp:userdashboard')
 
 
-        # def form_valid(self, form):
-        #     import pdb;
-        #     pdb.set_trace()
-        #
-        # def form_invalid(self, form, **kwargs):
-        #     print('inside invalid')
-        #     import pdb;
-        #     pdb.set_trace()
-        #     context=self.get_context_data()
-        #     return render(self.request, self.template_name,context=context)
+class UpdateUser(UpdateView):
+    """
+    Methods for enabling user to update his profile with some of the details
+    """
+    model = NewUser
+    form_class = NewUserUpdateForm
+    template_name = 'update_user.html'
+
+    def get(self, request, *args, **kwargs):
+        """
+        Method to handle and decide whether allowing the logged in user to update the property or not
+        :return: Either the form containing values to update the properties or login page to login as seller
+        """
+        if self.request.session.get('logged_in', False):
+                return super().get(request, *args, **kwargs)
+        else:
+                messages.add_message(self.request, messages.INFO, "Please login as seller to post a property")
+                return redirect('loginapp:check_login')
+
+    def get_context_data(self, **kwargs):
+        """
+        Send some extra data to the form output
+        :param kwargs:
+        :return: context
+        """
+        context = super(UpdateUser, self).get_context_data(**kwargs)
+        username = self.request.session.get('current_user')
+        current_user = NewUser.objects.get(username=username)
+        context['current_user'] = current_user
+        return context
+
+    def form_valid(self, form):
+        """
+        If the form data is valid, update the particular record
+        :param form: data from the template
+        :return: control to user dashboard
+        """
+        context = self.get_context_data()
+        form.instance.is_seller = context['current_user'].is_seller
+        form.instance.save()
+        return redirect('userdashboardapp:userdashboard')
+
+
+class UserQueryResponses(View):
+    """
+    An extra option at buyer's navbar, directing to a page containing all the responses made by seller's of respective\
+    properties regarding the enquiry made by the buyer
+    """
+    def get(self, request):
+        """
+        Get all the responses made by the seller to display
+        :param request:
+        :return:
+        """
+        if request.session.get('logged_in'):
+            if request.session.get('is_seller'):
+                return handle_error(request)
+            elif not request.session.get('is_seller', False):
+                try:
+                    queries = []
+                    query_responses = []
+                    enquiry_made = Enquiry.objects.filter(enquiry_user=self.request.user)
+                    for enquiry in enquiry_made:
+                        queries.append(QueryResponses.objects.filter(enquiry_made=enquiry))
+                    for query in queries:
+                        for responses in query:
+                            query_responses.append(responses)
+                except Enquiry.DoesNotExist:
+                    query_responses = False
+                except QueryResponses.DoesNotExist:
+                    query_responses = False
+                return render(request, 'query_response.html', {'query_responses': query_responses})
+        else:
+            return redirect('loginapp:check_login')
 

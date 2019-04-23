@@ -4,6 +4,7 @@ from .forms import NewUserForm
 
 
 class NewUserRegistration(FormView):
+    """Class to display form for user registration"""
 
     form_class = NewUserForm
     template_name = 'registerapp/registration_form.html'
@@ -18,6 +19,7 @@ class NewUserRegistration(FormView):
 
 
 def buyerorseller(request):
+    """Method to set whether the user registering is a seller or a buyer"""
 
     if request.method == 'GET':
         return render(request, 'registerapp/buyer_or_seller.html')

@@ -44,13 +44,12 @@
 	<!-- end slider -->
 <header>
     <div class="navbar navbar-default navbar-static-top">
-        <form method="POST" style="margin-top:10px" action="{% url 'propertyapp:searchproperty' %}">
+        <form method="POST" style="margin-top:10px">
             {% csrf_token %}
             <div class="md-form active-purple active-purple-2 mb-3" style="width:40%;margin-left:20px;margin-top:10px;float:left">
                 <input type="text" name="search_text" value="" placeholder="Enter Property Title">
             </div>
             <select name="select_city" style="width:200px;float:left;margin-left:15px;margin-top:10px" class="btn btn-secondary dropdown-toggle">
-                <option selected="selected" disabled>Select City</option>
                 <option value="Kanpur">Kanpur</option>
                 <option value="New Delhi">New Delhi</option>
                 <option value="Ghaziabad">Ghaziabad</option>
@@ -58,14 +57,13 @@
                 <option value="All Cities">All Cities</option>
             </select>
              <select name="select_state" style="width:200px;float:left;margin-left:15px;margin-top:10px" class="btn btn-secondary dropdown-toggle">
-                <option selected="selected" disabled>Select State</option>
                 <option value="Uttar Pradesh">Uttar Pradesh</option>
                 <option value="Delhi">Delhi</option>
                 <option value="Karnataka">Karnataka</option>
                 <option value="Punjab">Punjab</option>
                 <option value="All States">All States</option>
             </select>
-            <input class="btn btn-secondary dropdown-toggle" type="submit" value="Search Property" style="margin-left:10px;margin-top:10px; width:20%">
+            <input class="btn btn-secondary dropdown-toggle" type="submit" value="Search Property" style="margin-left:10px;margin-top:10px; width:20%" name="search_query_property">
         </form>
     </div>
     </header>
@@ -86,6 +84,11 @@
                         <div class="card-image">
                             <div>
                                 <img class="img-responsive" src="{{item.1.property_image.url}}" style="max-width:100%;height:200px">
+                                {% ifequal item.0.property_seller seller %}
+                                    TRUE
+                                {% else %}
+                                    FALSE
+                                {% endifequal %}
                                 <div class="top-left" style="position: absolute;top: 8px;left: 16px">
                                     {% if item.0.id|divisibleby:2%}
                                         <div class="btn btn-details" style="width:80px;height:35px">BUY</div>

@@ -1,18 +1,22 @@
 from django.contrib.auth.models import User
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, render_to_response
+from django.template import RequestContext
 from django.views.generic import FormView
 from .forms import LoginForm
 from django.contrib.auth import authenticate, logout, login
 from registerapp.models import NewUser
 from django.contrib import messages
 
+
 class LoginFormView(FormView):
+    """Class to show login form for any user to login"""
 
     form_class = LoginForm
     template_name = 'loginapp/login_page.html'
 
     def form_valid(self, form):
+        """If all the entries made are valid, go to featured page, else show error"""
 
         username = form.cleaned_data['username']
         password = form.cleaned_data['password']
@@ -30,13 +34,13 @@ class LoginFormView(FormView):
 
 
 def check_user_login(request):
+    """"""
 
     already_logged_in = request.session.get('logged_in', False)
     if not already_logged_in:
         return LoginFormView.as_view()(request)
     else:
-        #FIX GO TO HOME
-        return HttpResponse('already logged in brother!')
+        return redirect('propertyapp:showfeaturedpage')
 
 
 def logout_user(request):

@@ -1,0 +1,46 @@
+{% include 'header_template.html' %}
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Casa</title>
+</head>
+<body>
+<div class="container" style="margin-top:10px">
+    <div class="span3 well">
+        {% if query_responses %}
+            <table>
+                <tr>
+                    <th>
+                        Query Property
+                    </th>
+                    <th>
+                        Response Made
+                    </th>
+                    <th>
+                        Seller's Email
+                    </th>
+                </tr>
+                {% for entries in query_responses %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'propertyapp:existingproperty' id=entries.enquiry_made.property.id %}">{{entries.enquiry_made.property.property_title}}
+                        </td>
+                        <td>
+                            {{entries.response}}
+                        </td>
+                        <td>
+                            {{entries.enquiry_made.property.property_poster.email_field}}
+                        </td>
+                    </tr>
+                {% endfor %}
+
+            </table>
+        {% else %}
+        <h3>Responses have yet to be made on your queries</h3>
+        {% endif %}
+    </div>
+</div>
+</body>
+</html>

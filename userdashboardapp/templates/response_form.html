@@ -1,0 +1,10 @@
+{% block response_form %}
+
+<form method="POST">
+    {% csrf_token %}
+    <textarea rows="10" cols="0" style="font-size:20px" placeholder="Write Your Query Here " name="response_area"></textarea><br>
+
+    <input type="submit" value="Submit" name="submit_response">
+</form>
+
+{% endblock response_form %}
